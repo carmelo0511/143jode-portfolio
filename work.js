@@ -23,10 +23,10 @@
      is wired); desc = the longer blurb (kept for future use). */
   var PROJECTS = [
     { name: "TIF AFTERPARTY", meta: "Music video teaser",         url: "#", desc: "Teaser edit for the TIF Afterparty music video." },
-    { name: "No Moss",      meta: "'25, final-year capstone",      url: "#", desc: "Capstone project for final year of university. Fullstack web app built with Nuxt 4." },
-    { name: "Mtech",        meta: "'25, MTech Consulting Club",    url: "#", desc: "Developed and launched the official website for MTech Consulting Club at The University of Melbourne" },
-    { name: "Kora",         meta: "'24, co-founded AI startup",    url: "#", desc: "Co-founded a startup developing an AI model tailored for VCE. Scaled to 6,000+ users with 200 MAU." },
-    { name: "Portfolio V1", meta: "Mar. '25, first portfolio",    url: "#", desc: "First portfolio website built in March 2025" }
+    { name: "Vybz x Citadium", meta: "Citadium × Vybz",      url: "#", desc: "Back-to-school campaign visuals for Citadium × Vybz." },
+    { name: "Mamacita",        meta: "Bad Bunny — Mamacita", url: "#", desc: "Visualizer for Bad Bunny's Mamacita (DJ Orma)." },
+    { name: "BigKid",          meta: "BigKid — Casa 2025",   url: "#", desc: "Title scenes for BigKid (Casa 2025)." },
+    { name: "Blankk",          meta: "Blankk anniversary",        url: "#", desc: "Anniversary visuals for the Blankk / KK Club night." }
   ];
 
   var shot = document.getElementById("workShot");

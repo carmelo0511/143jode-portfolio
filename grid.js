@@ -17,10 +17,10 @@
   /* project order matches the focus view (work.html) + About's Selected Works */
   var PROJECTS = [
     { name: "TIF AFTERPARTY" },
-    { name: "No Moss" },
-    { name: "Mtech" },
-    { name: "Kora" },
-    { name: "Portfolio V1" }
+    { name: "Vybz x Citadium" },
+    { name: "Mamacita" },
+    { name: "BigKid" },
+    { name: "Blankk" }
   ];
   /* media PER PROJECT — indices are referenced by LAYOUTS below. Real assets land
      here as they're delivered; projects without them yet fall back to PLACEHOLDER. */
@@ -40,7 +40,35 @@
       { src: "media/tif.mp4", type: "video", poster: "media/tif-1.jpg" },
       { src: "media/tif-cartridge.jpg", type: "image" }
     ],
-    PLACEHOLDER, PLACEHOLDER, PLACEHOLDER, PLACEHOLDER
+    /* 1 — Vybz x Citadium: the vertical STORY still fills the PORTRAIT accent (idx3);
+       the landscape teaser (idx1) + screen stills fill the row */
+    [
+      { src: "media/vybz-1.jpg", type: "image" },
+      { src: "media/vybz.mp4", type: "video", poster: "media/vybz-2.jpg" },
+      { src: "media/vybz-2.jpg", type: "image" },
+      { src: "media/vybz-3.jpg", type: "image" }
+    ],
+    /* 2 — Mamacita (Bad Bunny): the vertical teaser (idx3) fills the accent; frames row */
+    [
+      { src: "media/mama-1.jpg", type: "image" },
+      { src: "media/mama-2.jpg", type: "image" },
+      { src: "media/mama-3.jpg", type: "image" },
+      { src: "media/mama.mp4", type: "video", poster: "media/mama-1.jpg" }
+    ],
+    /* 3 — BigKid: the ultrawide scene clip (idx1) sits in a wide tile; the BigKid logo accents */
+    [
+      { src: "media/bigkid-1.jpg", type: "image" },
+      { src: "media/bigkid.mp4", type: "video", poster: "media/bigkid-1.jpg" },
+      { src: "media/bigkid-2.jpg", type: "image" },
+      { src: "media/bigkid-3.jpg", type: "image" }
+    ],
+    /* 4 — Blankk anniversary: the KK-club display loop (idx2) + stills */
+    [
+      { src: "media/blankk-1.jpg", type: "image" },
+      { src: "media/blankk-2.jpg", type: "image" },
+      { src: "media/blankk.mp4", type: "video", poster: "media/blankk-2.jpg" },
+      { src: "media/blankk-3.jpg", type: "image" }
+    ]
   ];
   /* per-project tile layout: each entry = [media index into MEDIA, SHAPE class],
      split into LEFT and RIGHT zones. Rotated per project so the shapes/sizes
@@ -60,10 +88,10 @@
      kept clear of the tall accent (a right PORTRAIT tile, reaching ~36vh). */
   var NUM_POS = [
     ["3vw", "20vh"],                                         // 0 TIF AFTERPARTY — far-left, below the left cluster
-    ["17vw", "22vh"],                                       // 1 No Moss — left-centre, below the lg tile
-    ["51vw", "18vh"],                                        // 2 Mtech — right slot-1, below the landscape
-    ["3vw", "27vh"],                                         // 3 Kora — far-left, lower
-    ["88vw", "20vh"]                                         // 4 Portfolio V1 — far-right, below the slot-4 tile
+    ["17vw", "22vh"],                                       // 1 Vybz x Citadium — left-centre, below the lg tile
+    ["51vw", "18vh"],                                        // 2 Mamacita — right slot-1, below the landscape
+    ["3vw", "27vh"],                                         // 3 BigKid — far-left, lower
+    ["88vw", "20vh"]                                         // 4 Blankk — far-right, below the slot-4 tile
   ];
 
   var listEl = document.getElementById("gridList");
