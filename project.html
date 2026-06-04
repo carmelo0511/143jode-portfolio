@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Project — 143jode." />
+  <title>Project — 143jode</title>
+  <link rel="icon" href="icon.svg" />
+
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+  <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    rel="stylesheet"
+    href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap"
+  />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" />
+  <link rel="stylesheet" href="styles.css?v=27" />
+  <link rel="stylesheet" href="project.css?v=5" />
+</head>
+<body class="project">
+  <header class="work-head proj-head">
+    <a class="proj-index" href="work.html">Index</a>
+    <nav class="topnav" aria-label="Primary">
+      <a href="index.html">Works,</a>
+      <a href="about.html">About,</a>
+      <a href="mailto:hello@143jode.com">Contact</a>
+    </nav>
+  </header>
+
+  <main class="proj-page">
+    <h1 class="proj-title" id="projTitle">Project</h1>
+
+    <!-- hero + meta + intro + gallery are populated by project.js -->
+    <div class="proj-hero" id="projHero"></div>
+
+    <div class="proj-meta">
+      <ul class="proj-tags" id="projTags"></ul>
+      <span class="proj-year" id="projYear"></span>
+      <span class="proj-cat" id="projCat"></span>
+    </div>
+
+    <div class="proj-intro">
+      <h2 class="proj-headline" id="projHeadline"></h2>
+      <div class="proj-intro__right">
+        <p class="proj-desc" id="projDesc"></p>
+        <div class="proj-cta">
+          <span class="proj-cta__label">Contact</span>
+          <span class="proj-cta__title">Let's Collaborate</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="proj-gallery" id="projGallery"></div>
+
+    <!-- (More Projects) -> the next project's name, links to it -->
+    <a class="proj-next" id="projNext" href="work.html">
+      <span class="proj-next__label">(More Projects)</span>
+      <span class="proj-next__name" id="projNextName"></span>
+    </a>
+  </main>
+
+  <!-- fixed scroll-progress counter: slides bottom->top as it counts 0->100 -->
+  <div class="proj-counter" id="projCounter" aria-hidden="true">
+    <span class="proj-counter__n" id="counterN">0</span>
+    <span class="proj-counter__d">/100</span>
+  </div>
+
+  <script src="project.js?v=7"></script>
+</body>
+</html>

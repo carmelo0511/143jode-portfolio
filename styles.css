@@ -1,0 +1,653 @@
+/* ============================================================
+   lokasasmita — landing page recreation
+   Faithful rebuild of the Fiber Framer template hero.
+   ============================================================ */
+
+:root {
+  --bg: #ffffff;
+  --ink: #111111;
+  --muted: #9a9a9a;
+  --panel: #121212;
+  --pad: clamp(16px, 2vw, 26px);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1); /* expo-out: snappy then settle */
+  --font: "Switzer", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body { height: 100%; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+a { color: inherit; text-decoration: none; }
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%);
+  white-space: nowrap; border: 0;
+}
+
+/* ---------- Preloader -------------------------------------- */
+.preloader {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  z-index: 100;
+  pointer-events: none;
+  background: var(--bg);
+  transition: opacity 0.45s ease;
+}
+.preloader.is-done { opacity: 0; }
+
+.preloader__count {
+  font-weight: 600;
+  font-size: clamp(15px, 1.1vw, 18px);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+}
+
+/* ---------- Hero ------------------------------------------- */
+.hero {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  min-height: 68vh;
+  padding: clamp(20px, 2.4vh, 30px) var(--pad) 0;
+}
+
+.hero__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.logo {
+  display: inline-flex;
+  color: var(--ink);
+  cursor: pointer;
+}
+/* the mark is a canvas so it can take the same slice-glitch as the headline */
+.logo__canvas { display: block; width: 28px; height: 28px; }
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  text-transform: uppercase;
+  font-size: 16px;   /* real: .nav-item a { font-size: 16px } — flat, no scaling */
+  font-weight: 700;  /* real: 800 (Satoshi-Variable); 700 with our static faces */
+  color: var(--ink); /* every item is #121212; OPACITY differentiates, not colour */
+}
+/* real model: all nav items dark, inactive at .32 opacity, active/hover at 1 */
+.nav a {
+  position: relative;
+  padding: 1px 0;
+  opacity: 0.32;
+  transition: opacity 0.4s var(--ease);
+}
+.nav a:hover,
+.nav a:focus-visible,
+.nav a.is-active,
+.nav a[aria-current="page"] { opacity: 1; }
+
+/* intro block: bold tagline (left) + paragraph (right) */
+.hero__intro {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--pad);
+  margin-top: clamp(48px, 11vh, 130px);
+}
+
+.hero__tagline {
+  align-self: start;
+  max-width: 12.5em; /* wraps "Web Dev, Design, and" / "Animation" */
+  font-size: clamp(23px, 2.4vw, 35px);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+}
+
+.hero__desc {
+  grid-column: 2;
+  max-width: 46ch;
+  font-size: clamp(16px, 1.45vw, 22px);
+  font-weight: 500;
+  line-height: 1.34;
+  letter-spacing: -0.005em;
+}
+
+/* giant edge-to-edge headline (rendered onto the canvas) */
+.hero__name {
+  position: relative;
+  margin-top: auto;          /* pin to the bottom of the white area */
+  width: 100%;
+  font-weight: 700;          /* used only by JS to read the family/weight */
+}
+.hero__canvas { display: block; width: 100%; }
+
+/* ---------- Black panel ------------------------------------ */
+.panel {
+  position: relative;
+  z-index: 1;
+  height: 32vh;
+  background: var(--panel);
+  display: grid;
+  place-items: center;
+}
+.panel__mark { display: inline-flex; }
+.panel__mark .flower {
+  display: block;
+  width: clamp(34px, 3.4vw, 46px);
+  height: clamp(34px, 3.4vw, 46px);
+  filter: brightness(0) invert(1); /* whiten the black icon on the dark panel */
+  animation: spin 22s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ============================================================
+   Intro + reveal choreography (only when JS is active)
+   counter -> a black cover balloons up from the footer line with the
+   white flower centred -> holds -> its top edge recedes back down to
+   the footer band while the page de-zooms into place and content
+   (incl. the glitch headline) staggers in.
+   ============================================================ */
+
+/* the black cover: a full-screen field carrying the white flower.
+   it scales up from a seed on the footer line, then clips its top
+   edge down to the footer band, handing off to the real panel. */
+.cover {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: var(--panel);
+  pointer-events: none;
+  will-change: transform, clip-path, opacity;
+}
+.cover__flower {
+  position: absolute;
+  left: 50%;
+  top: 84%;                       /* sits where the footer flower lives */
+  width: clamp(34px, 3.4vw, 46px);
+  height: clamp(34px, 3.4vw, 46px);
+  transform: translate(-50%, -50%);
+  filter: brightness(0) invert(1);
+  animation: spin 22s linear infinite;
+}
+html.no-js .cover { display: none; }
+/* plain cover (no flower) — used for page-to-page navigation */
+.cover--plain .cover__flower { display: none; }
+
+/* base (while the counter ticks): a tiny invisible seed just below centre,
+   so the balloon grows as a floating box (white above AND below) like the ref */
+html.js .cover {
+  /* seed: a WIDE + SHORT bar low on the footer (≈72% wide x 10% tall), measured
+     off the reference — NOT a tiny uniform dot. A uniform scale(0.1) grows area
+     as scale² from a point and "pops"; a wide-but-thin seed grown from a low
+     anchor instead RISES (top edge climbs to 0, bottom edge barely moves), which
+     is the reference's gentle unfold. non-uniform scale keeps it wide + thin. */
+  transform: scaleX(0.72) scaleY(0.1);
+  transform-origin: 50% 86%;
+  opacity: 0;
+  clip-path: inset(0 0 0 0);   /* stable start for the loaded recede */
+}
+/* cover phase: balloon up to full black, flower fades/scales in */
+html.js body.intro-cover .cover {
+  /* the wide-short bar fades in (0.22s) and HOLDS ~0.4s — clearly visible
+     sitting low on the footer — then RISES to full black over 0.6s. Because the
+     seed is already wide, the growth is a gentle vertical unfold (matching the
+     reference's ~300ms hold + ~450ms rise), not a dot popping open. */
+  /* rise uses a SYMMETRIC ease-in-out (not the shared --ease expo-out, which is
+     front-loaded and makes the start feel rushed). this curve eases in gently,
+     keeps an even pace through the middle, and settles softly — a steady rise.
+     duration 1.1s so the motion reads unhurried. */
+  transition: opacity 0.22s ease, transform 1.1s cubic-bezier(0.45, 0.05, 0.55, 0.95) 0.6s;
+  transform: scale(1);
+  opacity: 1;
+}
+/* hide the real footer while the cover balloons so the box floats on white
+   (like the reference); it sits ready beneath the cover for the reveal */
+html.js body.intro-cover .panel { opacity: 0; }
+/* reveal phase: the black recedes UP off the top (a band lifts away), the
+   footer flower beneath takes over, and the headline glitches in below it */
+html.js body.loaded .cover {
+  transition: clip-path 0.95s var(--ease);
+  transform: scale(1);            /* hold full size; only the clip recedes */
+  opacity: 1;
+  clip-path: inset(0 0 100% 0);   /* visible region shrinks from the bottom up */
+}
+
+/* the whole page de-zooms into place during the reveal (headline scales in) */
+html.js .stage {
+  transform: scale(1.12);
+  transform-origin: 50% 66%;
+}
+html.js body.loaded .stage {
+  transition: transform 1.15s var(--ease);
+  transform: none;
+}
+
+/* content hidden by default; fades + rises in as the cover uncovers it */
+html.js .reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity 1.05s var(--ease),
+    transform 1.05s var(--ease);
+}
+html.js body.loaded .reveal { opacity: 1; transform: none; }
+
+/* the landing nav uses .reveal to fade in, but its RESTING state is the muted
+   .32 (active/hover -> 1) — re-state it as the loaded end-state for nav only,
+   with enough specificity to beat the generic `.reveal { opacity: 1 }` above */
+html.js body.loaded .nav a.reveal { opacity: 0.32; }
+html.js body.loaded .nav a.reveal:hover,
+html.js body.loaded .nav a.reveal:focus-visible,
+html.js body.loaded .nav a.reveal.is-active { opacity: 1; }
+
+/* the headline fades in; its tear comes from the JS glitch burst */
+html.js .hero__name {
+  opacity: 0;
+  transition: opacity 0.8s var(--ease);
+}
+html.js body.loaded .hero__name {
+  opacity: 1;
+  transition-delay: 0.45s;        /* lowest on the page -> uncovered last */
+}
+
+/* per-element stagger, timed to the receding edge passing each zone */
+html.js body.loaded [data-reveal="logo"]    { transition-delay: 0.08s; }
+html.js body.loaded [data-reveal="nav"]     { transition-delay: calc(0.08s + var(--i) * 0.08s); }
+html.js body.loaded [data-reveal="tagline"] { transition-delay: 0.26s; }
+html.js body.loaded [data-reveal="desc"]    { transition-delay: 0.36s; }
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 720px) {
+  .hero { min-height: 70vh; }
+  .hero__intro {
+    grid-template-columns: 1fr;
+    gap: 18px;
+    margin-top: clamp(40px, 9vh, 90px);
+  }
+  .hero__tagline { max-width: 18ch; }
+  .hero__desc { grid-column: 1; max-width: 60ch; }
+  .nav { gap: 0; }
+  .panel { height: 30vh; }
+}
+
+/* ============================================================
+   Reduced motion: keep the counter, drop the glitch + big moves
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  html.js .reveal,
+  html.js .hero__name { transition-duration: 0.3s; transform: none; }
+  html.js .stage,
+  html.js body.loaded .stage { transform: none; }       /* no de-zoom */
+  /* cover becomes a plain crossfade: no balloon scale, no clip recede */
+  html.js .cover { transform: none; clip-path: inset(0 0 0 0); }
+  html.js body.intro-cover .cover { transition: opacity 0.2s ease; transform: none; }
+  html.js body.loaded .cover {
+    transition: opacity 0.3s ease;
+    opacity: 0;
+    clip-path: none;
+    transform: none;
+  }
+  .cover__flower,
+  .panel__mark .flower { animation: none; }
+}
+
+/* ============================================================
+   Accordion page transition (site-wide) — #pageWipe
+   A curtain of vertical slats that fold away on a 3D cylinder to
+   reveal the page on arrival, and fold back to cover it on
+   departure. transition.js fills #pageWipe with .pwipe__slat strips
+   and toggles .is-open. Independent of the old .cover (no conflict).
+   ============================================================ */
+.pwipe {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  overflow: hidden;
+  pointer-events: none;
+  background: #0b0b0c;            /* black stage (reference) — also the no-flash cover */
+  perspective: 900px;
+  perspective-origin: 50% 50%;
+  transform: scale(1);
+  opacity: 1;
+  /* the whole stage ZOOMS + fades; fade is delayed so the barrel reads first */
+  transition: transform 0.74s cubic-bezier(0.66, 0, 0.2, 1), opacity 0.5s ease 0.16s;
+}
+.pwipe--idle { background: transparent; opacity: 0; } /* index: idle until a nav fires */
+html.no-js .pwipe { display: none; }
+
+.pwipe__slat {
+  flex: 1 1 0;
+  height: 100%;
+  /* bright white slats with edge-shading so the barrel reads in 3D on black */
+  background: linear-gradient(90deg, #cfcabf 0%, #fffdf8 50%, #cfcabf 100%);
+  transform-origin: 50% 50%;
+  backface-visibility: hidden;
+  transform: translateZ(0) rotateY(0deg);
+  transition: transform 0.68s cubic-bezier(0.66, 0, 0.2, 1);
+  transition-delay: calc(var(--d, 0) * 0.04s); /* centre-out ripple */
+}
+/* OPEN = the slats fold onto a DEEP concave barrel while the whole stage zooms
+   toward the viewer and fades → the next section is revealed (zoom-in reveal). */
+.pwipe.is-open {
+  transform: scale(1.34);
+  opacity: 0;
+}
+.pwipe.is-open .pwipe__slat {
+  transform: translateZ(var(--z, 0px)) rotateY(var(--ry, 84deg));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pwipe { transition: opacity 0.32s ease; }
+  .pwipe__slat { transition: none; transform: none !important; }
+  .pwipe.is-open { transform: none; opacity: 0; }
+}
+
+/* ============================================================
+   Page transitions + loaders TEMPORARILY OFF.
+   Hide every cover overlay (old page cover + accordion wipe) so pages
+   just appear — no loader, no transition. To bring transitions back:
+   delete this rule AND set ENABLED = true in transition.js.
+   ============================================================ */
+.cover,
+.pwipe { display: none !important; }
+
+/* ============================================================
+   Top-left page nav — the ACTIVE page is a big title, the other
+   pages are small grey links beside it, flowing left→right like the
+   reference (Work, About, Contact). Replaces the old
+   top-right stacked .nav. Sits inside the fixed .work-head bar.
+   ============================================================ */
+.topnav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  column-gap: 0.32em;
+  row-gap: 0;
+  pointer-events: none;
+}
+.topnav a {
+  pointer-events: auto;
+  font-weight: 700;
+  line-height: 0.88;
+  letter-spacing: -0.02em;
+  color: var(--muted);
+  font-size: clamp(15px, 1.45vw, 22px);
+  align-self: flex-start;
+  transition: color 0.35s var(--ease);
+  /* trim the half-leading so the CAP sits at the box top at EVERY size, so the
+     morphing word keeps a CONSTANT top through the scale (both directions).
+     Without this, line-height:0.88 lets the big title's glyphs overflow its box
+     ~6px but the small link only ~1px, so the word's visual top settles ~5px
+     during the transition. cap→alphabetic trims to cap-height / baseline. */
+  text-box-trim: trim-both;
+  text-box-edge: cap alphabetic;
+}
+.topnav a:hover,
+.topnav a:focus-visible { color: var(--ink); }
+.topnav a.is-active {
+  color: var(--ink);
+  /* the ACTIVE page title is large like the ref (≈28% of the viewport width),
+     not capped small — so it dominates and the body/nav read smaller by contrast */
+  font-size: clamp(44px, 10vw, 240px);
+  letter-spacing: -0.05em;
+}
+
+/* ============================================================
+   Page transition — cross-document View Transitions.
+   The nav items are SHARED elements: each carries a stable
+   view-transition-name, so the browser morphs it from its old
+   size/position to the new one as you navigate (the active page's
+   big title shrinks, the destination's grows into place). The rest
+   of the page crossfades. Triggered automatically by the plain <a>
+   links; unsupported browsers just navigate instantly.
+   ============================================================ */
+@view-transition { navigation: auto; }
+
+.topnav a[href="index.html"]     { view-transition-name: nav-work; }
+.topnav a[href="about.html"]     { view-transition-name: nav-about; }
+.topnav a[href^="mailto"]        { view-transition-name: nav-contact; }
+
+/* the Works-list names ↔ the SAME names inside About's "Selected Works" prose:
+   each pair shares a view-transition-name, so the word SLIDES from the list row
+   to its spot in the sentence (and back) on the work↔about navigation.
+   CRITICAL: name a shrink-wrapped INLINE-BLOCK span on BOTH sides (.wl on /work,
+   .sw on /about) so the two morph boxes are IDENTICAL in size — otherwise a
+   full-width <li> squishing into a narrow word distorts the snapshot and reads
+   as a teleport instead of a clean slide. Matching line-height keeps the box
+   heights equal too. One match per page, so the combined selectors stay safe. */
+.work-list .wl { display: inline-block; line-height: 1.5; }
+.work-list li[data-i="0"] .wl, .about-works .sw[data-i="0"] { view-transition-name: vt-work-0; }
+.work-list li[data-i="1"] .wl, .about-works .sw[data-i="1"] { view-transition-name: vt-work-1; }
+.work-list li[data-i="2"] .wl, .about-works .sw[data-i="2"] { view-transition-name: vt-work-2; }
+.work-list li[data-i="3"] .wl, .about-works .sw[data-i="3"] { view-transition-name: vt-work-3; }
+.work-list li[data-i="4"] .wl, .about-works .sw[data-i="4"] { view-transition-name: vt-work-4; }
+
+/* the words MORPH: each glides HORIZONTALLY (its box-top is identical on both
+   pages, so it never travels up or down) while it scales between its two roles —
+   a big title ↔ a small link, or a list row ↔ a word in a sentence. Slow,
+   elegant ease-in-out, and a per-word STAGGER so they arrive almost one-by-one
+   rather than as a single block (ref: gregorylalle). */
+::view-transition-group(nav-work),
+::view-transition-group(nav-about),
+::view-transition-group(nav-contact),
+::view-transition-group(vt-work-0),
+::view-transition-group(vt-work-1),
+::view-transition-group(vt-work-2),
+::view-transition-group(vt-work-3),
+::view-transition-group(vt-work-4),
+::view-transition-group(vt-hero) {                      /* the grid thumbnail zooming into the focus preview */
+  animation-duration: 0.7s;                             /* each word's move (shorter -> the stagger reads) */
+  animation-timing-function: cubic-bezier(0.62, 0, 0.2, 1);
+}
+/* the BIG TITLE swaps as a PAIR: Works and About BOTH have delay 0, so one
+   shrinks while the other grows IN STEP — the swap is identical in both
+   directions (work→about AND about→work), with no "incoming word arrives before
+   the outgoing one leaves" reversal. (CSS view-transition delays can't flip by
+   direction, so a symmetric pair is the only way both ways match the ref.)
+   Contact, then the five Selected-Works names, cascade one-by-one BEHIND the
+   title — that cascade shows on the work-focus ↔ about navigation, where the
+   names are paired. */
+::view-transition-group(nav-contact) { animation-delay: 0.12s; }
+::view-transition-group(vt-work-0)   { animation-delay: 0.24s; }
+::view-transition-group(vt-work-1)   { animation-delay: 0.36s; }
+::view-transition-group(vt-work-2)   { animation-delay: 0.48s; }
+::view-transition-group(vt-work-3)   { animation-delay: 0.60s; }
+::view-transition-group(vt-work-4)   { animation-delay: 0.72s; }
+
+/* WORDS LEAD, CONTENT FOLLOWS: the old page clears to white FAST (0.25s), the
+   words cascade across the near-empty window, and only THEN — after a delay —
+   does the new page's content fade in. The named word-groups render above root
+   and aren't touched by this fade, so they carry the empty-window phase and the
+   rest of the page arrives behind them (ref: gregorylalle). */
+@keyframes vt-root-out { to { opacity: 0; } }
+@keyframes vt-root-in { from { opacity: 0; } to { opacity: 1; } }
+::view-transition-old(root) { animation: vt-root-out 0.25s ease both; }
+::view-transition-new(root) { animation: vt-root-in 0.65s cubic-bezier(0.62, 0, 0.2, 1) 0.8s both; }
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(root),
+  ::view-transition-new(root) { animation: none !important; }
+}
+
+/* ============================================================
+   Intro preloader (work landing) — the big number counts 0→100
+   while CLIMBING from the bottom-left up toward the top, and a thin
+   bar on the RIGHT edge fills UPWARD in sync (the same 6px bar as
+   /work's scroll progress, but bottom-anchored + driven by the
+   count). At 100 the overlay CROSSFADES out (no curtain-slide), the
+   bar resets back down, and the page settles up into place. Driven
+   by intro.js; shown only when the <head> gate sets html.intro-run
+   (first load + reloads), so internal navigations keep their View
+   Transition. NOT reusing .cover/.pwipe (killed by the global
+   display:none above). Reference: gregorylalle.com
+   ============================================================ */
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;                 /* above everything (work-head is z-40) */
+  display: none;                 /* hidden by default → no flash for no-JS / internal nav */
+  background: var(--bg);
+  pointer-events: none;
+  will-change: opacity;
+}
+html.intro-run .intro {
+  display: block;
+  pointer-events: auto;          /* hold the page until the reveal */
+}
+
+/* the climbing number, pinned to the bottom-left corner. inherits the page's
+   Satoshi; intro.js translates it upward as the count rises. */
+.intro__count {
+  position: absolute;
+  left: clamp(14px, 2vw, 26px);
+  bottom: clamp(14px, 2vw, 26px);
+  font-weight: 700;
+  font-size: clamp(60px, 8.5vw, 110px);
+  line-height: 0.82;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  will-change: transform;
+}
+
+/* right-edge bar — matches /work's .work-progress (6px, black, right edge) but
+   anchored at the BOTTOM so it fills UPWARD as the count climbs (intro.js sets
+   scaleY = progress); on reveal intro.js re-pins the origin to the TOP and drains
+   it smoothly UPWARD off the screen (matches the ref — not a snap back down). */
+.intro__bar {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 6px;
+  height: 100%;
+  background: var(--ink);
+  transform: scaleY(0);
+  transform-origin: 50% 100%;
+  will-change: transform;
+}
+
+/* reveal: the overlay CROSSFADES away — the white is also the page bg, so this
+   reads as the page materialising (matches the reference; no abrupt slide). */
+.intro.is-out {
+  opacity: 0;
+  transition: opacity 0.72s var(--ease);
+  pointer-events: none;
+}
+/* …and the page gives a gentle upward SETTLE as the white clears — only on an
+   intro load (internal navigations are untouched). Per-page main container
+   (.work-main / .about-main). The HEADER no longer block-settles — its active
+   title does the per-letter roll-up (below) instead. */
+/* the IMAGES (left rail), the PREVIEW, and the TEXT (meta / about) all RISE UP
+   from below + fade in as the loader clears — the same "from the bottom"
+   entrance as the title's letter roll-up, at block scale (ref). Staggered so
+   they arrive one after another: imagery → preview → list/author. */
+html.intro-run .work-rail,
+html.intro-run .work-preview,
+html.intro-run .work-meta {
+  transform: translateY(48px);
+  opacity: 0;
+}
+html.intro-run.intro-done .work-rail,
+html.intro-run.intro-done .work-preview,
+html.intro-run.intro-done .work-meta {
+  transform: none;
+  opacity: 1;
+  transition: transform 0.85s var(--ease), opacity 0.7s ease;
+}
+html.intro-run.intro-done .work-rail    { transition-delay: 0.05s; }
+html.intro-run.intro-done .work-preview { transition-delay: 0.13s; }
+html.intro-run.intro-done .work-meta    { transition-delay: 0.21s; }
+
+/* title letter ROLL-UP — intro.js splits the active title into per-letter
+   clip-masks (.ttl-mask); each inner letter (.ttl-i) rises from below its mask,
+   staggered L→R, as the loader clears (matches the ref). The padding/-margin pair
+   gives the glyphs room INSIDE the clip without changing the title's box: VERTICAL
+   for the comma's descender + cap, and HORIZONTAL because the title's negative
+   letter-spacing trims each letter's box narrower than its ink, so without the
+   side room overflow:hidden shaves the right edge of tight glyphs (the "s," in
+   "Works," was visibly cropped on reload). The negative margin cancels the pad so
+   letters keep their exact positions + tracking. */
+.ttl-mask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding: 0.15em 0.14em 0.2em;
+  margin: -0.15em -0.14em -0.2em;
+}
+.ttl-i { display: inline-block; }
+@keyframes ttl-rise {
+  from { transform: translateY(150%); }
+  to   { transform: translateY(0); }
+}
+
+/* ON /about, the Selected Works NAMES replay the work→about word morph as the
+   reload ENTRANCE — a measured FLIP done in intro.js (assembleNames): each name
+   starts as part of a vertical COLUMN up-left (≈ where the /work list sits) and
+   FLIES to its inline slot in the paragraph, staggered + fading in. A measured
+   FLIP (not a fixed CSS scatter) so the column→paragraph move actually matches
+   the real cross-doc morph. The names' fly itself is inline-styled JS. */
+
+/* during the transition we see ONLY the WORK NAMES sliding — the surrounding PROSE
+   (the "(NN)" numbers + sentences) AND the BIO + CONNECT columns + social row are
+   all held back, then rise/fade in AFTER the words finish (~1.7s). opacity-only
+   hold (+ a small rise for the columns) so the grid layout — and the names'
+   measured slots — stay put. Gated to intro loads. */
+html.intro-run .about-works .sw-desc { opacity: 0; }
+html.intro-run.intro-done .about-works .sw-desc {
+  opacity: 1;
+  transition: opacity 0.6s ease 1.6s;   /* the words slide in first, then the prose */
+}
+html.intro-run .about-col--bio,
+html.intro-run .about-col--connect,
+html.intro-run .about-social {
+  opacity: 0;
+  transform: translateY(16px);
+}
+html.intro-run.intro-done .about-col--bio,
+html.intro-run.intro-done .about-col--connect,
+html.intro-run.intro-done .about-social {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.6s ease 1.7s, transform 0.7s var(--ease) 1.7s;   /* after the words finish */
+}
+@media (prefers-reduced-motion: reduce) {
+  html.intro-run .about-works .sw-desc,
+  html.intro-run .about-col--bio,
+  html.intro-run .about-col--connect,
+  html.intro-run .about-social { opacity: 1 !important; transform: none !important; transition: none !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* no settle / no letter roll / no name assemble — just a quick crossfade */
+  .intro.is-out { transition: opacity 0.3s ease; }
+  html.intro-run .work-rail,
+  html.intro-run .work-preview,
+  html.intro-run .work-meta,
+  html.intro-run .about-main,
+  html.intro-run.intro-done .work-rail,
+  html.intro-run.intro-done .work-preview,
+  html.intro-run.intro-done .work-meta,
+  html.intro-run.intro-done .about-main { transform: none; opacity: 1; transition: none; }
+  .ttl-i { animation: none; }
+}

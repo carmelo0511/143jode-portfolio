@@ -1,0 +1,377 @@
+/* ============================================================
+   lokasasmita — /work
+   Scroll-driven project showcase: a fixed header, a sticky big
+   number + project list + large preview, and a scrolling rail of
+   thumbnails. The active project (number, marker, blurb, preview)
+   tracks the scroll position. Screenshots are styled placeholders.
+   ============================================================ */
+
+body.work {
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100%;
+  /* the real /work is set in Satoshi (Satoshi-Variable / Satoshi-Bold) */
+  font-family: "Satoshi", "Switzer", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+/* ---------- Fixed header (logo + nav) ---------------------- */
+.work-head {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 40;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: clamp(20px, 2.4vh, 30px) var(--pad) 0;
+  pointer-events: none; /* let the page scroll; re-enable on the controls */
+}
+.work-head .logo,
+.work-head .nav { pointer-events: auto; }
+
+.work-head .logo { display: inline-flex; color: var(--ink); }
+.work-head .logo .flower {
+  display: block;
+  width: 28px;
+  height: 28px;
+  animation: spin 22s linear infinite;
+}
+
+/* nav reuses .nav from styles.css; mark the current page */
+.work-head .nav a.is-active,
+.work-head .nav a[aria-current="page"] { color: var(--ink); }
+
+/* ---------- Focus header extras: Index · description · Visit site ----------
+   The reference focus view carries four items across the top bar. The base
+   .work-head is already a flex row with justify-content:space-between, so the
+   four children spread evenly (≈ 0 / 33 / 66 / 100%) — matching the ref without
+   any grid math. None of these get a view-transition-name, so they fade with
+   the page while the nav words keep morphing across navigations. */
+
+/* you're in the Works section here → "Works," reads as current (ink, not big) */
+body.work .topnav a[href="index.html"] { color: var(--ink); }
+
+.focus-index,
+.focus-visit {
+  pointer-events: auto;
+  align-self: flex-start;
+  font-weight: 700;
+  font-size: clamp(15px, 1.45vw, 22px);
+  line-height: 0.88;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  text-decoration: none;
+  white-space: nowrap;
+  /* same cap-trim as the nav so all four items share one cap-top baseline */
+  text-box-trim: trim-both;
+  text-box-edge: cap alphabetic;
+  transition: opacity 0.3s var(--ease);
+}
+.focus-index:hover,
+.focus-visit:hover { opacity: 0.55; }
+.focus-visit__a { margin-left: 0.28em; }
+
+/* the active project's date / context line — sits next to the nav like the ref,
+   work.js swaps its text as you scroll between projects */
+.focus-desc {
+  align-self: flex-start;
+  /* FIXED width (not max-width): the meta varies 24–28 chars per project, and on a
+     space-between row a variable child re-flows ALL the gaps → the nav would jitter
+     project-to-project. A constant width keeps the leftover space — and the nav —
+     fixed. flex:0 0 so it never grows or shrinks. */
+  flex: 0 0 31ch;
+  margin: 0;
+  pointer-events: none;
+  font-weight: 500;
+  font-size: clamp(14px, 1.3vw, 19px);
+  line-height: 1.18;
+  letter-spacing: -0.01em;
+  color: var(--ink);   /* the project context reads as a black label (ref), not greyed */
+  text-box-trim: trim-both;
+  text-box-edge: cap alphabetic;
+  transition: opacity 0.4s var(--ease);
+}
+
+/* tighter screens: drop the secondary items, keep Index + nav */
+@media (max-width: 860px) {
+  .focus-desc,
+  .focus-visit { display: none; }
+}
+
+/* ---------- Stage: number | rail | meta | preview ---------- */
+/* the sticky block sits LOW in the viewport like the ref (names ≈ 50% down,
+   preview bottom ≈ a hair above the fold, description near the bottom) */
+:root { --band: 50vh; }
+
+.work-main { width: 100%; }
+
+.work-stage {
+  display: grid;
+  /* real layout SPREADS the full width: number+thumbs (left) | names+blurb |
+     LARGE preview anchored right. The middle is 1fr so it absorbs the slack and
+     pushes the preview to the right edge; the names sit in a fixed-width wrap at
+     its left so the ◀ keeps a constant offset from the names. */
+  grid-template-columns: auto 1fr minmax(390px, 40vw);
+  column-gap: clamp(36px, 4.5vw, 100px);
+  align-items: start;
+  max-width: 1900px;
+  margin: 0 auto;
+  /* no big bottom padding: the LAST project must REST at the band (its number,
+     preview + blurb stay pinned) instead of scrolling into an empty footer */
+  padding: var(--band) var(--pad) 0;
+}
+
+/* scrolling rail — each project is [ big number | thumbnails ];
+   the stacked thumbnails give the page its height */
+.work-rail { display: block; }
+.proj {
+  display: grid;
+  /* number | thumbnails (≈15vw, a hair smaller to match the ref),
+     with a generous gap between the number and the thumbnail column */
+  grid-template-columns: auto minmax(160px, 15vw);
+  column-gap: clamp(40px, 6vw, 150px);
+  align-items: start;
+  padding-bottom: 22vh; /* breathing room between project segments */
+}
+/* the last project needs enough trailing room that its FINAL thumbnail (incl.
+   the video) can scroll all the way up to the 50vh band — otherwise the last
+   tile never reaches the viewport centre and can't become the preview. Needs
+   ≥ ~50vh below the last tile's centre; 58vh leaves a comfortable margin. The
+   number/preview stay pinned because the STAGE has no bottom padding. */
+.proj:last-child { padding-bottom: 58vh; }
+
+/* scroll-progress bar pinned to the right edge: a BLACK fill that grows downward
+   (scaleY from the top) with scroll — empty/white at the top, all-black at the
+   bottom, like the ref */
+.work-progress {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 6px;
+  height: 100vh;
+  background: var(--ink);
+  transform: scaleY(0);
+  transform-origin: top center;
+  z-index: 30;
+  pointer-events: none;
+}
+
+/* hide the native scrollbar on /work — the .work-progress bar above is the only
+   scroll indicator, like the ref. (work.css loads only on /work, so this html
+   rule stays scoped to this page and leaves other pages' scrollbars alone.) */
+html { scrollbar-width: none; -ms-overflow-style: none; }      /* Firefox / old Edge */
+html::-webkit-scrollbar { width: 0; height: 0; display: none; } /* Safari / Chrome */
+
+/* big number — sticky in the band, so at a hand-off you see both numbers
+   and the outgoing one scrolls up. Its inner span gets the scroll-linked
+   slot-machine roll (perspective + rotateX, set from JS) as it rises past
+   the band — a 3D reel roll, NOT an in-plane spin. */
+.proj__num {
+  grid-column: 1;
+  position: sticky;
+  top: var(--band);
+  align-self: start;
+  width: max-content;
+  /* prominent display number, but the ref runs ~20% smaller than an 88px cap */
+  font-size: clamp(44px, 4.5vw, 70px);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.proj__num-i {
+  display: inline-block;
+  transform-origin: 50% 50%;
+  will-change: transform, opacity;
+}
+
+.proj__thumbs {
+  grid-column: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.thumb {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: 3px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+  background-size: cover;
+  background-position: center;
+}
+
+/* meta column — list + blurb, sticky in the band */
+.work-meta {
+  position: sticky;
+  top: var(--band);
+  align-self: start;
+}
+/* wrap shrinks to the longest name so the ◀ sits right beside the words (ref);
+   it's also the positioning context for the sliding marker */
+.work-list-wrap {
+  position: relative;
+  width: max-content;
+}
+/* project names — real site: .name a { font-size:14px; font-weight:800;
+   text-transform:uppercase; color:gray }, active/hover → dark.
+   (800 with our static Satoshi faces renders as the 700 "Bold" face.) */
+.work-list {
+  list-style: none;
+  text-transform: uppercase;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.75;
+  color: #808080;
+}
+.work-list li {
+  position: relative;
+  transition: color 0.4s var(--ease);
+  cursor: pointer;
+}
+.work-list li.is-active { color: var(--ink); }
+
+/* the ◀ marker: ONE element that SLIDES between rows (work.js sets translateY
+   to the active row) — "moving from project to project", not teleporting */
+.work-list__marker {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  margin-left: 14px;
+  font-size: 11px;
+  line-height: 1;
+  color: var(--ink);
+  pointer-events: none;
+  will-change: transform;
+  transition: transform 0.65s var(--ease);
+}
+/* creator name — sits at the foot of the meta column, like the ref's
+   "Grégory Lallé" beneath the project list (no per-project blurb anymore) */
+.work-author {
+  margin-top: clamp(120px, 22vh, 200px);
+  font-size: 16px;
+  font-weight: 700;          /* bold "highlighted" maker name, consistent with the grid (ref) */
+  line-height: 1.4;
+  color: var(--ink);
+}
+
+/* large preview — sticky in the band, swaps per active project */
+.work-preview {
+  position: sticky;
+  top: var(--band);
+  align-self: start;
+  background: #f0f0f0;
+  padding: 10px;
+}
+.work-shot {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background-size: cover;
+  background-position: center;
+  transition: opacity 0.4s var(--ease);
+}
+
+.work-shot {
+  position: relative;
+  display: grid;
+  place-items: center;
+  /* the shared element the GRID's clicked thumbnail morphs INTO: grid.js tags
+     that tile `vt-hero` right before navigating here, so it scales up into the
+     big preview as a cross-document View Transition (the ref's "zoom") */
+  view-transition-name: vt-hero;
+}
+.work-shot::after {
+  content: attr(data-label);
+  font-size: clamp(13px, 1.2vw, 18px);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.82);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.35);
+}
+.shot--1.work-shot::after { color: rgba(40, 32, 20, 0.6); text-shadow: none; }
+
+/* the big preview shows the hovered/active media — image OR video (fills the
+   box, label overlays it). work.js shows whichever matches. */
+.work-shot__img,
+.work-shot__vid {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+  display: none;
+}
+/* video thumbnails PLAY the clip (small looping preview) filling the tile, so
+   the left rail's video item moves like the big preview — not a dead poster.
+   the tile's background-image stays as a poster fallback if autoplay is blocked. */
+.thumb { position: relative; cursor: pointer; overflow: hidden; }
+.thumb__vid {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+  pointer-events: none;          /* clicks/hover go to the .thumb, not the video */
+}
+/* keep the video tiles CLEAN — they just loop silently like a moving image.
+   Safari draws a big "start-playback" / overlay play button on inline video
+   until it plays (and shows it in Low Power Mode); hide it + any media controls
+   so there's never a play/pause icon. Applies to the big preview video too. */
+/* target EVERY video on /work at the ELEMENT level (not just the .thumb/.shot
+   classes) so the rule survives whatever Safari version names the pseudo, and
+   nuke the lot: the controls bar, its enclosure, the overlay AND the
+   start-playback button (the big centre circle on a not-yet-played clip). */
+body.work video::-webkit-media-controls,
+body.work video::-webkit-media-controls-enclosure,
+body.work video::-webkit-media-controls-panel,
+body.work video::-webkit-media-controls-overlay-enclosure,
+body.work video::-webkit-media-controls-overlay-play-button,
+body.work video::-webkit-media-controls-start-playback-button {
+  display: none !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* ---------- Cover (page-transition reveal on load) --------- */
+/* on /work the cover starts FULL black and recedes up to reveal */
+html.js body.work .cover {
+  transform: none;
+  opacity: 1;
+  clip-path: inset(0 0 0 0);
+  transition: clip-path 0.95s var(--ease);
+}
+html.js body.work .cover.is-out { clip-path: inset(0 0 100% 0); }
+/* without JS there's nothing to recede it — just show the page */
+html.no-js body.work .cover { display: none; }
+
+/* ---------- Responsive ------------------------------------- */
+@media (max-width: 860px) {
+  .work-stage {
+    grid-template-columns: 1fr;
+    row-gap: 8px;
+    padding-top: 15vh;
+  }
+  /* stack cleanly: preview, list+blurb, then the rail (number over thumbnails) */
+  .work-preview { position: static; order: 1; margin-bottom: 20px; }
+  .work-meta { position: static; order: 2; margin: 6px 0 18px; }
+  .work-rail { order: 3; }
+  .proj { grid-template-columns: 1fr; } /* number stacked over its thumbnails */
+  .proj__num { position: static; font-size: clamp(36px, 12vw, 54px); margin-bottom: 8px; }
+  .proj__thumbs { grid-column: 1; }
+  .work-author { margin-top: 14px; }
+  .work-list-wrap { max-width: none; }
+  /* the active item is already bold; drop the far-right marker on narrow screens */
+  .work-list__marker { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .work-head .logo .flower { animation: none; }
+  .work-list__marker { transition: none; } /* snap, don't slide */
+  html.js body.work .cover { transition: opacity 0.3s ease; }
+  html.js body.work .cover.is-out { opacity: 0; clip-path: none; }
+}

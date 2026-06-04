@@ -1,0 +1,249 @@
+/* ============================================================
+   lokasasmita — /about
+   Three columns (Bio / Personal Story / Connect) + social links,
+   anchored to the lower portion of the viewport. Set in Satoshi.
+   ============================================================ */
+
+body.about {
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100%;
+  font-family: "Satoshi", "Switzer", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --band: 50vh;   /* the SAME line the grid + focus name lists pin to */
+}
+
+/* ---------- Fixed header (shared look) -------------------- */
+.work-head {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 40;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: clamp(20px, 2.4vh, 30px) var(--pad) 0;
+  pointer-events: none;
+}
+.work-head .logo,
+.work-head .nav { pointer-events: auto; }
+.work-head .logo { display: inline-flex; color: var(--ink); }
+.work-head .logo .flower {
+  display: block;
+  width: 28px;
+  height: 28px;
+  animation: spin 22s linear infinite;
+}
+.work-head .nav a.is-active,
+.work-head .nav a[aria-current="page"] { color: var(--ink); }
+
+/* ---------- About header: big title + email on ONE top row (matches ref) -----
+   the cluster Works · About(big) · Contact is centred, and the email is pinned
+   to the far right of the SAME row — in its OWN column so it never drops to a
+   second line. */
+body.about .topnav {
+  display: grid;
+  grid-template-columns: 0.62fr auto auto auto 1fr; /* smaller left spacer -> cluster sits centre-LEFT like the ref */
+  align-items: start;
+  width: 100%;
+  column-gap: clamp(12px, 1.6vw, 30px);
+}
+body.about .topnav > a[href="index.html"] { grid-column: 2; justify-self: end; }
+body.about .topnav > a[href="about.html"] { grid-column: 3; }
+body.about .topnav__right {
+  grid-column: 4;
+  justify-self: start;
+  display: inline-flex;
+  gap: 0.32em;
+  align-items: start;
+}
+body.about .topnav__email { grid-column: 5; justify-self: end; align-self: start; }
+/* the email is a SECOND mailto link — blank its name so nav-contact stays unique
+   (a duplicate view-transition-name aborts the entire transition). */
+body.about .topnav a.topnav__email { view-transition-name: none; }
+/* email = the OPPOSITE of the nav/social links: BLACK by default so the contact
+   address stands out as the CTA, then greys on hover */
+body.about a.topnav__email { color: var(--ink); transition: color 0.35s var(--ease); }
+body.about a.topnav__email:hover { color: var(--muted); }
+
+/* ---------- Layout ---------------------------------------- */
+.about-main {
+  min-height: 100vh;
+  display: flow-root;   /* BFC: contain the grid's margin-top so the page stays 1 screen
+                           (no margin-collapse stacking 50vh ON TOP of min-height:100vh) */
+  padding: 0 var(--pad) clamp(16vh, 18vh, 22vh); /* leave room for the fixed footer bar */
+}
+/* the column HEADS sit just ABOVE the band so the first content line (the (01)
+   project + the bio's first line) lands ON the band — i.e. at the SAME y as the
+   grid/focus name list. --head-gap = head height + its margin-bottom; tuned so
+   the name's cap-top matches the list, making the work↔about morph horizontal. */
+.about-grid {
+  --head-gap: 2.6em;
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.5fr) minmax(0, 0.78fr);
+  column-gap: clamp(40px, 5.5vw, 130px);
+  row-gap: clamp(48px, 9vh, 120px);
+  align-items: start;
+  max-width: 1720px;
+  /* +6.6px: empirical nudge so the (01) line's cap-top lands exactly on the band
+     (== the grid/focus list's first name) → the morph has zero vertical drift */
+  margin-top: calc(var(--band) - var(--head-gap) + 6.6px);
+}
+.about-col--bio { grid-column: 1; grid-row: 1; }
+.about-col--works { grid-column: 2; grid-row: 1; }    /* Selected Works = the wide centre, like the ref;
+                                                         col 3 stays empty (ref minus the awards block) */
+
+/* match the real site exactly (read off its devtools):
+   body + labels are 14px Satoshi-Bold (weight ~800 → 700 with our static faces),
+   labels are #121212 at 0.32 opacity, margin-bottom 1rem, no letter-spacing */
+.about-col__head {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  /* grey via the COLOR's alpha (== #121212 @ 0.32), NOT element opacity — the
+     entrance reveal animates `opacity` 0→1, which would otherwise override an
+     `opacity:0.32` here and render the heading solid black after the fade-in */
+  color: rgba(18, 18, 18, 0.32);
+  margin-bottom: 1rem;
+}
+.about-col p {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+.about-col p + p { margin-top: 1.5em; }
+/* cap the bio width so it wraps to a stable 5 lines on wide screens (ref-style
+   narrow block) instead of widening with the fluid 1.1fr column */
+.about-col--bio p { max-width: 400px; }
+.about-col a { color: inherit; text-decoration: none; }
+.about-col a:hover { text-decoration: underline; }
+
+/* Selected Works — one project PER LINE (mirrors the ref's "Selected Clients").
+   Each line shares the grid/focus list's font-size + line-height, so the project
+   NAMES land at the SAME vertical positions across pages and the vt-work-* morph
+   glides each word purely sideways. */
+.about-works {
+  width: 546px;                 /* FIXED wrap width (overflows the empty 3rd column) so
+                                   each project's text keeps to ≈ one line (tuned) → names
+                                   stay on consecutive rows at any viewport, like the ref */
+  font-size: 14px;
+  line-height: 1.75;            /* == grid list (24.5px steps) → names on matching rows */
+  font-weight: 700;             /* ref: the WHOLE Selected-Works block is one uniform bold weight (names NOT heavier than their descriptions) — matches the bio */
+}
+.about-works .sw {
+  display: inline-block;        /* one box → safe for view-transition-name (no line-wrap split) */
+  text-transform: uppercase;    /* match the Works-list rendering for a clean morph */
+  line-height: 1.5;             /* == grid .wl box → identical snapshot, pure translation */
+  font-weight: 700;             /* name bold like the list */
+  color: var(--ink);
+}
+.about-works .sw-num,
+.about-works .sw-desc { color: var(--ink); }   /* black + inherit the container's 700 → the whole block reads as ONE uniform highlighted run (ref); only the column HEAD stays grey */
+
+/* ---------- Navigation entrance (the ref's "section load" reveal) ----------
+   On a cross-document nav INTO /about there's no intro loader, so the content
+   would just crossfade with the View Transition. Instead html.enter (set in the
+   <head> the instant the page parses) HOLDS the prose + columns hidden while the
+   word morph plays; once the VT finishes, about.js adds html.entered and they
+   fade in with a top-to-bottom STAGGER. The morphing NAMES (.sw) are NOT touched
+   — the VT animates them. Hidden only while staged, so JS-off users see content. */
+html.enter .about-col__head,
+html.enter .about-col--bio,
+html.enter .about-foot { opacity: 0; transform: translateY(16px); }
+html.enter .about-works .sw-num,
+html.enter .about-works .sw-desc { opacity: 0; }   /* inline → fade only (no transform) */
+
+html.entered .about-col__head,
+html.entered .about-col--bio,
+html.entered .about-foot {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.55s ease, transform 0.7s var(--ease);
+}
+html.entered .about-works .sw-num,
+html.entered .about-works .sw-desc {
+  opacity: 1;
+  transition: opacity 0.5s ease;
+  transition-delay: var(--rd, 0s);   /* per-line stagger, set by about.js */
+}
+/* light column stagger: bio first, then the works head, then the footer */
+html.entered .about-col--bio { transition-delay: 0.04s; }
+html.entered .about-col--works .about-col__head { transition-delay: 0.10s; }
+html.entered .about-foot { transition-delay: 0.40s; }
+
+@media (prefers-reduced-motion: reduce) {
+  html.enter .about-col__head, html.enter .about-col--bio, html.enter .about-foot,
+  html.enter .about-works .sw-num, html.enter .about-works .sw-desc {
+    opacity: 1 !important; transform: none !important;
+  }
+}
+
+/* ---------- Footer bar (ref: status left · name + socials centre · ® right) - */
+.about-foot {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 30;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: clamp(16px, 3vw, 60px);
+  padding: 0 var(--pad) clamp(18px, 3.4vh, 36px);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.about-foot__mid {
+  display: inline-flex;
+  align-items: baseline;
+  gap: clamp(18px, 2.4vw, 46px);
+}
+.about-social {
+  display: flex;
+  gap: clamp(16px, 1.6vw, 30px);
+}
+.about-social a {
+  color: var(--muted);                       /* grey by default, like the nav links */
+  text-decoration: none;
+  transition: color 0.35s var(--ease);
+}
+.about-social a:hover { color: var(--ink); } /* black on hover */
+
+/* ---------- Cover (page-transition reveal on load) -------- */
+html.js body.about .cover {
+  transform: none;
+  opacity: 1;
+  clip-path: inset(0 0 0 0);
+  transition: clip-path 0.95s var(--ease);
+}
+html.js body.about .cover.is-out { clip-path: inset(0 0 100% 0); }
+html.no-js body.about .cover { display: none; }
+
+/* ---------- Responsive ------------------------------------ */
+@media (max-width: 860px) {
+  .about-main { padding: 22vh var(--pad) 6vh; }
+  /* drop the band offset + fixed prose width on narrow screens */
+  .about-grid { grid-template-columns: 1fr; row-gap: clamp(34px, 6vh, 56px); margin-top: 0; }
+  .about-works { width: auto; }
+  .about-col--bio,
+  .about-col--works { grid-column: 1; grid-row: auto; }
+  /* footer: unpin and stack on narrow */
+  .about-foot {
+    position: static;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 4vh var(--pad) 6vh;
+  }
+  .about-foot__mid { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .about-social { flex-wrap: wrap; }
+  /* header: drop the centred grid on narrow — back to the normal left flow */
+  body.about .topnav { display: flex; flex-wrap: wrap; }
+  body.about .topnav__right { display: contents; }   /* contact flows inline */
+  body.about .topnav__email { display: none; }        /* redundant with Contact on mobile */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .work-head .logo .flower { animation: none; }
+  html.js body.about .cover { transition: opacity 0.3s ease; }
+  html.js body.about .cover.is-out { opacity: 0; clip-path: none; }
+}

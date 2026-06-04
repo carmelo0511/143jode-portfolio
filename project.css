@@ -1,0 +1,280 @@
+/* ============================================================
+   lokasasmita — project detail page
+   Big title, hero, meta row, intro, Let's-Collaborate CTA, a
+   stacked media gallery (screenshots + a video), More Projects,
+   and a sliding 0->100 scroll-progress counter.
+   ============================================================ */
+
+body.project {
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100%;
+  /* the real site is set in Satoshi */
+  font-family: "Satoshi", "Switzer", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+/* ---------- Fixed header (shared look with /work) ---------- */
+.work-head {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 40;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: clamp(20px, 2.4vh, 30px) var(--pad) 0;
+  pointer-events: none;
+}
+.work-head .logo,
+.work-head .nav { pointer-events: auto; }
+.work-head .logo { display: inline-flex; color: var(--ink); }
+.work-head .logo .flower {
+  display: block;
+  width: 28px;
+  height: 28px;
+  animation: spin 22s linear infinite;
+}
+.work-head .nav a.is-active { color: var(--ink); }
+
+/* project ("focus") header — "Index" (back to the grid) sits on the left, the
+   nav next to it, like the reference. Clicking Index returns to /work, where
+   the shared "Works," morphs from this small link back up to the big title. */
+.proj-head { justify-content: flex-start; gap: clamp(40px, 7vw, 130px); }
+.proj-index {
+  pointer-events: auto;
+  align-self: flex-start;
+  font-weight: 700;
+  font-size: clamp(15px, 1.45vw, 22px);
+  line-height: 0.88;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  transition: opacity 0.3s var(--ease);
+}
+.proj-index:hover { opacity: 0.55; }
+
+/* ---------- Page ------------------------------------------- */
+/* text (title / meta / intro) spans wide; the media are centred + narrower */
+.proj-page {
+  max-width: 1340px;
+  margin: 0 auto;
+  padding: 0 var(--pad) 18vh;
+}
+
+/* big centred title — matches the real site's h1 sizing */
+.proj-title {
+  text-align: center;
+  font-weight: 500;
+  font-size: clamp(2.5rem, calc(1.815rem + 5.75vw), 9rem);
+  line-height: 1.05;
+  letter-spacing: -0.075rem;
+  text-transform: uppercase;
+  padding: 23vh 0 8vh;
+}
+
+/* ---------- Media (hero + gallery items) ------------------- */
+/* every media is a centred grey "mat" with the screenshot inset.
+   the main picture (hero) is large; the others are smaller. */
+.proj-media {
+  width: 100%;
+  margin: 0 auto clamp(34px, 6vh, 72px);
+  background: #ececec;
+  padding: clamp(14px, 1.7vw, 28px);
+}
+.proj-hero .proj-media { width: min(1180px, 77vw); margin-bottom: 0; }
+.proj-gallery .proj-media { width: min(600px, 39vw); }
+.proj-media__inner {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background-size: cover;
+  background-position: center;
+  display: grid;
+  place-items: center;
+}
+.proj-media__inner::after {
+  content: attr(data-label);
+  font-size: clamp(13px, 1.3vw, 20px);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.85);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.35);
+}
+.shot--1 .proj-media__inner::after { color: rgba(40, 32, 20, 0.6); text-shadow: none; }
+
+/* video item: a play triangle in a disc */
+.proj-media--video .proj-media__inner::before {
+  content: "";
+  position: absolute;
+  width: clamp(54px, 6vw, 80px);
+  height: clamp(54px, 6vw, 80px);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.9);
+}
+.proj-media--video .proj-media__inner > .play {
+  position: absolute;
+  z-index: 2;
+  width: 0;
+  height: 0;
+  margin-left: 6px;
+  border-style: solid;
+  border-width: 11px 0 11px 18px;
+  border-color: transparent transparent transparent #fff;
+}
+
+/* embedded gallery video — fills the mat and plays (autoplay / muted / loop),
+   so the project page previews video for real, like /work */
+.proj-media__vid {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 2;
+}
+/* a real clip is playing now, so drop the static play-disc overlay */
+.proj-media--video .proj-media__inner::before { display: none; }
+
+.proj-hero { margin-bottom: clamp(30px, 5vh, 60px); }
+
+/* ---------- Meta row (tags | year | category) ------------- */
+.proj-meta {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: start;
+  gap: var(--pad);
+  padding: 7vh 0 1vh;
+  font-family: "DM Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-size: clamp(11px, 0.82vw, 13px);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #b4b4b4;
+}
+.proj-tags { list-style: none; line-height: 1.7; }
+.proj-year { text-align: center; }
+.proj-cat { text-align: right; }
+
+/* ---------- Intro (headline + description) ----------------- */
+/* big gaps above (after the meta) and below (before the gallery) — the
+   reference page breathes with ~24vh of white between sections */
+.proj-intro {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--pad);
+  padding: 22vh 0 26vh;
+  align-items: start;
+}
+.proj-headline {
+  font-size: clamp(30px, 4vw, 56px);
+  font-weight: 700;
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+}
+.proj-desc {
+  font-size: clamp(16px, 1.5vw, 23px);
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: -0.005em;
+}
+
+/* ---------- Let's Collaborate CTA (in the intro right col) - */
+.proj-cta {
+  margin-top: clamp(72px, 12vh, 150px);
+}
+.proj-cta__label {
+  display: block;
+  font-size: clamp(15px, 1.2vw, 19px);
+  font-weight: 500;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+.proj-cta__title {
+  display: block;
+  font-size: clamp(30px, 4vw, 56px);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+}
+
+/* ---------- More projects -> next project ----------------- */
+/* "(More Projects)" label, then the NEXT project's name (same scale as the
+   title); the whole block links to that project via the cover transition */
+.proj-next {
+  display: block;
+  text-align: center;
+  padding: 52vh 0 16vh; /* ~a full viewport of white so the last image is gone */
+  color: var(--ink);
+}
+.proj-next__label {
+  display: block;
+  font-size: clamp(12px, 0.95vw, 14px);
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  margin-bottom: clamp(30px, 7vh, 72px);
+  transition: color 0.3s var(--ease);
+}
+.proj-next__name {
+  display: block;
+  font-weight: 500;
+  font-size: clamp(2.5rem, calc(1.815rem + 5.75vw), 9rem);
+  line-height: 1.05;
+  letter-spacing: -0.075rem;
+  text-transform: uppercase;
+  transition: opacity 0.3s var(--ease);
+}
+.proj-next:hover .proj-next__label { color: var(--ink); }
+.proj-next:hover .proj-next__name { opacity: 0.5; }
+
+/* ---------- Sliding scroll-progress counter --------------- */
+/* number rides the left edge, /100 the right edge; JS slides `bottom`
+   from floor (0) to ceiling (100) in step with the count */
+.proj-counter {
+  position: fixed;
+  left: var(--pad);
+  right: var(--pad);
+  bottom: var(--pad);
+  z-index: 30;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  pointer-events: none;
+  font-weight: 500;
+  font-size: clamp(44px, 9vw, 132px); /* big, like the real site */
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+html.no-js .proj-counter { display: none; }
+
+/* ---------- Cover (page-transition reveal on load) -------- */
+html.js body.project .cover {
+  transform: none;
+  opacity: 1;
+  clip-path: inset(0 0 0 0);
+  transition: clip-path 0.72s var(--ease);
+}
+html.js body.project .cover.is-out { clip-path: inset(0 0 100% 0); }
+html.no-js body.project .cover { display: none; }
+
+/* a video tile shows a neutral dark frame behind the <video> while it loads */
+.proj-media--video .proj-media__inner { background: linear-gradient(160deg, #1c1c1f 0%, #313136 100%); }
+.proj-media--video .proj-media__inner::after { content: ""; }
+
+/* ---------- Responsive ------------------------------------- */
+@media (max-width: 760px) {
+  .proj-title { padding: 20vh 0 7vh; }
+  .proj-hero .proj-media,
+  .proj-gallery .proj-media { width: 100%; } /* full width on small screens */
+  .proj-meta { grid-template-columns: 1fr; gap: 6px; }
+  .proj-year, .proj-cat { text-align: left; }
+  .proj-intro { grid-template-columns: 1fr; gap: 14px; padding-bottom: 8vh; }
+  .proj-counter { font-size: clamp(26px, 9vw, 40px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .work-head .logo .flower { animation: none; }
+  html.js body.project .cover { transition: opacity 0.3s ease; }
+  html.js body.project .cover.is-out { opacity: 0; clip-path: none; }
+}

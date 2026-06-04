@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Selected work — 143jode." />
+  <title>Work — 143jode</title>
+  <link rel="icon" href="icon.svg" />
+
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+  <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
+  <link
+    rel="stylesheet"
+    href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap"
+  />
+  <link rel="stylesheet" href="styles.css?v=27" />
+  <link rel="stylesheet" href="work.css?v=13" />
+
+  <script>
+    /* Intro gate — show the counting-number loader on the FIRST load of the
+       session and on RELOADS; skip it on internal navigations (those keep the
+       cross-document View Transition). Runs before <body> paints, so the white
+       overlay covers instantly with no flash of the page — and because it only
+       ADDS the class when running, JS-off users are never trapped behind it. */
+    (function () {
+      try {
+        var e = (performance.getEntriesByType && performance.getEntriesByType("navigation")[0]) || null;
+        var type = e ? e.type
+          : (performance.navigation ? ["navigate", "reload", "back_forward"][performance.navigation.type] : "navigate");
+        var seen = false;
+        try { seen = !!sessionStorage.getItem("introSeen"); sessionStorage.setItem("introSeen", "1"); } catch (_) {}
+        if (type === "reload" || !seen) document.documentElement.classList.add("intro-run");
+      } catch (_) {}
+    })();
+  </script>
+</head>
+<body class="work">
+  <!-- intro preloader: number climbs 0→100 while the right bar fills upward, then
+       the overlay crossfades out and the page settles in. Present/visible only when
+       the <head> gate added html.intro-run. -->
+  <div class="intro" id="intro" aria-hidden="true">
+    <span class="intro__count" id="introCount">0</span>
+    <i class="intro__bar" id="introBar"></i>
+  </div>
+
+  <!-- right-edge scroll-progress bar (grows downward as you scroll) -->
+  <div class="work-progress" id="workProgress" aria-hidden="true"></div>
+
+  <!-- focus-view header (ref): Index (back to the grid) · nav · the active
+       project's context line · Visit site. The base .work-head is a flex row
+       with space-between, so the four items spread evenly (≈0/33/66/100%). -->
+  <header class="work-head focus-head">
+    <a class="focus-index" href="index.html">Index</a>
+    <nav class="topnav" aria-label="Primary">
+      <a href="index.html">Works,</a>
+      <a href="about.html">About,</a>
+      <a href="mailto:hello@143jode.com">Contact</a>
+    </nav>
+    <p class="focus-desc" id="focusDesc" aria-live="polite">Holiday-themed side projects</p>
+    <a class="focus-visit" id="focusVisit" href="#">Visit site<span class="focus-visit__a" aria-hidden="true">&#8599;</span></a>
+  </header>
+
+  <main class="work-main">
+    <div class="work-stage">
+      <!-- scrolling rail: each project carries its OWN big number (sticky), so at
+           a hand-off you see both numbers and the outgoing one rises away -->
+      <div class="work-rail" id="workRail">
+        <section class="proj" data-i="0">
+          <div class="proj__num"><span class="proj__num-i">01</span></div>
+          <div class="proj__thumbs">
+            <span class="thumb" style="background-image:url('media/img-1.jpg')" data-src="media/img-1.jpg" data-type="image"></span>
+            <span class="thumb" style="background-image:url('media/img-2.jpg')" data-src="media/img-2.jpg" data-type="image"></span>
+            <span class="thumb" style="background-image:url('media/img-3.jpg')" data-src="media/img-3.jpg" data-type="image"></span>
+            <span class="thumb thumb--video" style="background-image:url('media/img-1.jpg')" data-src="media/0.mp4" data-type="video"></span>
+          </div>
+        </section>
+        <section class="proj" data-i="1">
+          <div class="proj__num"><span class="proj__num-i">02</span></div>
+          <div class="proj__thumbs">
+            <span class="thumb" style="background-image:url('media/img-1.jpg')" data-src="media/img-1.jpg" data-type="image"></span>
+            <span class="thumb" style="background-image:url('media/img-2.jpg')" data-src="media/img-2.jpg" data-type="image"></span>
+            <span class="thumb" style="background-image:url('media/img-3.jpg')" data-src="media/img-3.jpg" data-type="image"></span>
+            <span class="thumb thumb--video" style="background-image:url('media/img-2.jpg')" data-src="media/0.mp4" data-type="video"></span>
+          </div>
+        </section>
+        <section class="proj" data-i="2">
+          <div class="proj__num"><span class="proj__num-i">03</span></div>
+          <div class="proj__thumbs">
+            <span class="thumb" style="background-image:url('media/img-1.jpg')" data-src="media/img-1.jpg" data-type="image"></span>
+            <span class="thumb" style="background-image:url('media/img-2.jpg')" data-src="media/img-2.jpg" data-type="image"></span>
+            <span class="thumb" style="background-image:url('media/img-3.jpg')" data-src="media/img-3.jpg" data-type="image"></span>
+            <span class="thumb thumb--video" style="background-image:url('media/img-3.jpg')" data-src="media/0.mp4" data-type="video"></span>
+          </div>
+        </section>
+        <section class="proj" data-i="3">
+          <div class="proj__num"><span class="proj__num-i">04</span></div>
+          <div class="proj__thumbs">
+            <span class="thumb" style="background-image:url('media/img-1.jpg')" data-src="media/img-1.jpg" data-type="image"></span>
+            <span class="thumb" style="background-image:url('media/img-2.jpg')" data-src="media/img-2.jpg" data-type="image"></span>
+            <span class="thumb" style="background-image:url('media/img-3.jpg')" data-src="media/img-3.jpg" data-type="image"></span>
+            <span class="thumb thumb--video" style="background-image:url('media/img-1.jpg')" data-src="media/0.mp4" data-type="video"></span>
+          </div>
+        </section>
+        <section class="proj" data-i="4">
+          <div class="proj__num"><span class="proj__num-i">05</span></div>
+          <div class="proj__thumbs">
+            <span class="thumb" style="background-image:url('media/img-1.jpg')" data-src="media/img-1.jpg" data-type="image"></span>
+            <span class="thumb" style="background-image:url('media/img-2.jpg')" data-src="media/img-2.jpg" data-type="image"></span>
+            <span class="thumb" style="background-image:url('media/img-3.jpg')" data-src="media/img-3.jpg" data-type="image"></span>
+            <span class="thumb thumb--video" style="background-image:url('media/img-2.jpg')" data-src="media/0.mp4" data-type="video"></span>
+          </div>
+        </section>
+      </div>
+
+      <!-- project list + active blurb (sticky) -->
+      <div class="work-meta">
+        <!-- the ◀ is a SINGLE element that slides between rows (not a per-li
+             ::after that teleports); work.js moves it to the active row -->
+        <div class="work-list-wrap">
+          <ul class="work-list" id="workList">
+            <li data-i="0" class="is-active"><span class="wl">Holidays</span></li>
+            <li data-i="1"><span class="wl">No Moss</span></li>
+            <li data-i="2"><span class="wl">Mtech</span></li>
+            <li data-i="3"><span class="wl">Kora</span></li>
+            <li data-i="4"><span class="wl">Portfolio V1</span></li>
+          </ul>
+          <span class="work-list__marker" id="workMarker" aria-hidden="true">&#9664;</span>
+        </div>
+        <p class="work-author">143jode</p>
+      </div>
+
+      <!-- large preview (sticky, swaps per active project) -->
+      <div class="work-preview">
+        <div class="work-shot" id="workShot" data-label="Holidays">
+          <img class="work-shot__img" alt="" />
+          <video class="work-shot__vid" muted loop playsinline autoplay></video>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="intro.js?v=4"></script>
+  <script src="work.js?v=13"></script>
+</body>
+</html>

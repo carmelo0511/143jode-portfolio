@@ -1,0 +1,14 @@
+# local tooling / preview config
+.claude/
+
+# reference material + internal notes (not part of the site)
+_research/
+MISSION.md
+
+# Vercel
+.vercel/
+
+# OS / editor junk
+.DS_Store
+*.mov
+Thumbs.db

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="About — 143jode." />
+  <title>About — 143jode</title>
+  <link rel="icon" href="icon.svg" />
+
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+  <link rel="preconnect" href="https://cdn.fontshare.com" crossorigin />
+  <link
+    rel="stylesheet"
+    href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap"
+  />
+  <link rel="stylesheet" href="styles.css?v=30" />
+  <link rel="stylesheet" href="about.css?v=18" />
+
+  <script>
+    /* Intro gate — show the counting-number loader on the FIRST load of the
+       session and on RELOADS; skip it on internal navigations (those keep the
+       cross-document View Transition). Runs before <body> paints, so the white
+       overlay covers instantly with no flash of the page — and because it only
+       ADDS the class when running, JS-off users are never trapped behind it. */
+    (function () {
+      try {
+        var e = (performance.getEntriesByType && performance.getEntriesByType("navigation")[0]) || null;
+        var type = e ? e.type
+          : (performance.navigation ? ["navigate", "reload", "back_forward"][performance.navigation.type] : "navigate");
+        var seen = false;
+        try { seen = !!sessionStorage.getItem("introSeen"); sessionStorage.setItem("introSeen", "1"); } catch (_) {}
+        if (type === "reload" || !seen) document.documentElement.classList.add("intro-run");
+      } catch (_) {}
+    })();
+
+    /* Navigation-entrance gate — when there's NO intro loader (an internal nav
+       into /about), HOLD the prose + columns hidden the instant the page parses so
+       about.js can fade them in with a stagger AFTER the word-morph View Transition
+       (the ref's "section load" reveal). Skip when the intro runs (it has its own
+       reveal) and under reduced-motion. Only ADDS a class, so JS-off is safe. */
+    (function () {
+      try {
+        var r = document.documentElement;
+        if (r.classList.contains("intro-run")) return;
+        if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        r.classList.add("enter");
+        /* failsafe: never leave content hidden if about.js fails to run */
+        setTimeout(function () { r.classList.add("entered"); }, 2500);
+      } catch (_) {}
+    })();
+  </script>
+</head>
+<body class="about">
+  <!-- intro preloader: number climbs 0→100 while the right bar fills upward, then
+       the overlay crossfades out and the page settles in. Present/visible only when
+       the <head> gate added html.intro-run. -->
+  <div class="intro" id="intro" aria-hidden="true">
+    <span class="intro__count" id="introCount">0</span>
+    <i class="intro__bar" id="introBar"></i>
+  </div>
+
+  <header class="work-head about-head">
+    <nav class="topnav" aria-label="Primary">
+      <a href="index.html">Works,</a>
+      <a href="about.html" class="is-active" aria-current="page">About,</a>
+      <span class="topnav__right">
+        <a href="mailto:hello@143jode.com">Contact</a>
+      </span>
+      <a class="topnav__email" href="mailto:hello@143jode.com">hello@143jode.com</a>
+    </nav>
+  </header>
+
+  <main class="about-main">
+    <div class="about-grid">
+      <section class="about-col about-col--bio">
+        <h2 class="about-col__head">Bio</h2>
+        <!-- bio sized to ~5 lines in the column (ref-style block) -->
+        <p>Mamadou, a 29 y.o. 2D/3D artist based in Paris, France. I craft characters, environments and motion design — turning ideas into bold, immersive visuals for brands, films and interactive experiences, where story and a love of detail sit at the heart of every single frame.</p>
+      </section>
+
+      <section class="about-col about-col--works">
+        <h2 class="about-col__head">Selected Works</h2>
+        <!-- FLOWING PROSE (ref's "Selected Clients" style): names embedded in
+             continuous sentences. FIXED width + grid line-height; each project's
+             text runs ~1.2 lines so the next NAME lands on the next consecutive
+             line at a DIFFERENT x — names sit SCATTERED mid-prose like the ref, yet
+             still one-per-line (same y as the grid list → the morph slides each
+             word purely sideways, a different distance each). Names keep vt-work-*. -->
+        <div class="about-works"><span class="sw-num">(01)</span> <span class="sw" data-i="0">Holidays</span><span class="sw-desc"> is a set of small, holiday-themed side-project websites I build for fun every season. </span><span class="sw-num">(02)</span> <span class="sw" data-i="1">No Moss</span><span class="sw-desc"> is my final-year university capstone, a fullstack web app designed and built with Nuxt 4. </span><span class="sw-num">(03)</span> <span class="sw" data-i="2">Mtech</span><span class="sw-desc"> is the official website I designed and launched for the MTech Consulting Club in Melbourne. </span><span class="sw-num">(04)</span> <span class="sw" data-i="3">Kora</span><span class="sw-desc"> is an AI startup I co-founded for VCE, scaled to 6,000+ users. </span><span class="sw-num">(05)</span> <span class="sw" data-i="4">Portfolio V1</span><span class="sw-desc"> is my very first portfolio website, designed and built from scratch back in March 2025.</span></div>
+      </section>
+
+    </div>
+
+    <!-- footer bar (ref: status left · name + socials centre · rights right) -->
+    <footer class="about-foot">
+      <span class="about-foot__status">Currently available for work in 2026.</span>
+      <span class="about-foot__mid">
+        <span class="about-foot__name">143jode</span>
+        <nav class="about-social" aria-label="Social">
+          <a href="#">github</a>
+          <a href="#">linkedin</a>
+          <a href="https://www.behance.net/MamadouJode" target="_blank" rel="noopener noreferrer">behance</a>
+          <a href="https://www.instagram.com/143jode" target="_blank" rel="noopener noreferrer">instagram</a>
+        </nav>
+      </span>
+      <span class="about-foot__rights">All rights reserved &reg;</span>
+    </footer>
+  </main>
+
+  <script src="intro.js?v=7"></script>
+  <script src="about.js?v=3"></script>
+</body>
+</html>

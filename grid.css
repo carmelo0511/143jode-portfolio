@@ -1,0 +1,224 @@
+/* ============================================================
+   143jode — Works GRID (the main /works index)
+   The capital "Works," page: a big title, a fixed centre column of
+   project NAMES, and one BAND per project whose thumbnails spread to
+   the left and right of that centre list. Scrolling moves through the
+   projects; the centred one is highlighted. Clicking a project opens
+   the FOCUS view (work.html) — its hero thumbnail morphs into the big
+   preview via a cross-document View Transition.
+   ============================================================ */
+
+body.works-grid {
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100%;
+  font-family: "Satoshi", "Switzer", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  /* mirror the FOCUS view's column maths (work.css .work-stage = number + rail-gap
+     + thumb, then the stage column-gap) so the name list lands at the SAME x here.
+     Then the grid↔focus morph just RESIZES the letters in place — it never slides.
+     --band is the 50vh line the focus list also pins to. */
+  --band: 50vh;
+  --list-w: 240px;
+  --list-x: calc(var(--pad) + clamp(55px, 5.6vw, 88px) + clamp(40px, 6vw, 150px) + max(160px, 15vw) + clamp(36px, 4.5vw, 100px));
+}
+
+/* the fixed header + big active "Works," reuse .work-head / .topnav from styles.css */
+.work-head { position: fixed; inset: 0 0 auto 0; z-index: 40; padding: clamp(20px, 2.4vh, 30px) var(--pad) 0; pointer-events: none; }
+.work-head .topnav a { pointer-events: auto; }
+
+.grid-main { position: relative; width: 100%; }
+
+/* ---------- Centre project-name list (fixed, screen-centred) ----------
+   stays put while the bands scroll; highlights whichever band is centred.
+   Each name is a shared element (vt-work-* in styles.css) so it morphs
+   to/from About and the focus view. */
+.grid-list-wrap {
+  position: fixed;
+  top: var(--band);            /* same 50vh line as the focus list (top-anchored, NOT centred) */
+  left: var(--list-x);         /* same x as the focus list → no horizontal jump on the morph */
+  width: max-content;          /* hug the longest name so the ◀ sits right beside the words (ref) */
+  z-index: 20;
+  pointer-events: none;
+}
+.grid-list-wrap .work-list,
+.grid-main .work-list {
+  list-style: none;
+  text-transform: uppercase;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.75;
+  color: #808080;
+}
+.grid-main .work-list li {
+  position: relative;
+  transition: color 0.4s var(--ease);
+  cursor: pointer;
+  pointer-events: auto;
+}
+.grid-main .work-list li.is-active { color: var(--ink); }
+.grid-main .work-list .wl { display: inline-block; line-height: 1.5; }
+
+.grid-list-wrap .work-list__marker {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  margin-left: 14px;
+  font-size: 11px;
+  line-height: 1;
+  color: var(--ink);
+  pointer-events: none;
+  will-change: transform;
+  transition: transform 0.6s var(--ease);
+}
+
+/* ---------- Project bands ----------------------------------- */
+.grid-bands {
+  /* the bands TOP-ALIGN at the list line (50vh) and HANG BELOW it, scrolling up
+     through it as you read (ref). 50vh top so the first band's tiles begin at the
+     line; a tall bottom so the last band can still reach it. */
+  padding-top: var(--band);
+  padding-bottom: 16vh;   /* enough scroll room for the LAST project to ride up to the line (centre) like the others; the max-scroll clamp in grid.js covers very short windows */
+}
+
+.gband {
+  position: relative;
+  display: grid;
+  /* LEFT thumbs end just before the list · CENTRE reserves the list's column ·
+     RIGHT thumbs start just after it — so the names column stays clear and the
+     tiles flank it (ref: "left cluster | names | right row"). The LEFT track width
+     is derived from --list-x so the gap before the list tracks the list position. */
+  grid-template-columns:
+    [left]   minmax(0, calc(var(--list-x) - var(--pad) - 2.4vw))
+    [centre] calc(var(--list-w) + 4vw)
+    [right]  minmax(0, 1fr);
+  align-items: start;            /* tiles TOP-align at the band top = the list line */
+  gap: 0;
+  padding: 0 var(--pad) 12vh;    /* small trailing gap — bands sit close so the next project peeks in (ref) */
+}
+
+.gband__zone { display: flex; min-width: 0; }
+/* LEFT: a 2-tile staggered cluster, top-aligned at the line, LEFT-aligned to the
+   page edge (ref) with a gap before the names; the 2nd (bigger) tile is nudged
+   down for the 2-up stagger */
+.gband__zone--left { grid-column: left; justify-content: flex-start; align-items: flex-start; gap: clamp(10px, 1.2vw, 22px); }
+.gband__zone--left .gthumb { flex: 0 1 auto; }
+/* RIGHT: a ROW of 4 equal tiles, TOP-aligned at the list line so the lone PORTRAIT
+   accent hangs straight DOWN below the strip (ref) */
+.gband__zone--right { grid-column: right; justify-content: flex-start; align-items: flex-start; gap: clamp(8px, 0.8vw, 16px); }
+.gband__zone--right .gthumb { flex: 1 1 0; }
+
+/* the big project number — placed at a SPECIFIC scattered spot per project
+   (left/top set inline by grid.js), like the ref (not stacked in a left line) */
+.gband__num {
+  position: absolute;
+  font-size: clamp(40px, 4.4vw, 72px);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+/* thumbnails — clean, rounded, a little size variety for an editorial feel.
+   each is a LINK into the focus view; the video tiles loop silently. */
+.gthumb {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  border-radius: 3px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+  background-size: cover;
+  background-position: center;
+  background-color: #ececec;
+  cursor: pointer;
+  flex: 0 1 auto;
+  min-width: 0;
+}
+/* LEFT tiles size by class (LG sits nearest the names); RIGHT tiles flex-fill the
+   row so only the ASPECT differs — mostly landscape, one PORT (tall) accent */
+.gthumb--lg   { width: clamp(118px, 11.8vw, 215px); aspect-ratio: 16 / 10; }
+.gthumb--sm   { width: clamp(108px, 11.3vw, 200px); aspect-ratio: 16 / 10; }
+.gthumb--land { aspect-ratio: 16 / 10; }
+.gthumb--port { aspect-ratio: 3 / 4; }
+/* offset the bigger left tile downward for a 2-up stagger (ref). Uses MARGIN
+   (not transform) so the per-tile reveal transform below is free to animate it. */
+.gband__zone--left .gthumb:nth-child(2) { margin-top: clamp(13px, 1.7vh, 26px); }
+
+/* REVEAL: as a band scrolls in, its tiles RISE from below + fade in ONE AFTER
+   ANOTHER in a left→right WAVE (ref) — left cluster first, then the right row,
+   then the number lands last. grid.js stamps each tile with --ti (its order in
+   the band) so the transition-delay staggers them. The names list / title /
+   author stay put. The hidden start is scoped to html.js so no-JS users still
+   see content; grid.js toggles .is-in per band via an IntersectionObserver. */
+html.js .gband__zone .gthumb,
+html.js .gband__num {
+  opacity: 0;
+  transform: translateY(54px);
+  transition: opacity 0.6s ease, transform 0.72s var(--ease);
+  transition-delay: calc(var(--ti, 0) * 0.07s);   /* the wave: each tile a beat after the last */
+}
+.gband.is-in .gband__zone .gthumb,
+.gband.is-in .gband__num { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  html.js .gband__zone .gthumb,
+  html.js .gband__num { opacity: 1; transform: none; transition: none; }
+}
+
+.gthumb__vid {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+/* never show Safari's overlay / start-playback button on the looping tiles */
+body.works-grid video::-webkit-media-controls,
+body.works-grid video::-webkit-media-controls-enclosure,
+body.works-grid video::-webkit-media-controls-panel,
+body.works-grid video::-webkit-media-controls-overlay-play-button,
+body.works-grid video::-webkit-media-controls-start-playback-button {
+  display: none !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* the maker's name is PINNED to the page bottom at all times (ref) — aligned
+   UNDER the names column (the same x as the list), NOT page-centred */
+.grid-author {
+  position: fixed;
+  left: var(--list-x);
+  bottom: clamp(16px, 3vh, 32px);
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;          /* bold so the maker's name reads as "highlighted" (ref) */
+  color: var(--ink);
+  z-index: 30;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* hide the native scrollbar (the page is the only scroll indicator) */
+body.works-grid { scrollbar-width: none; -ms-overflow-style: none; }
+body.works-grid::-webkit-scrollbar { width: 0; height: 0; display: none; }
+
+/* ---------- Responsive ------------------------------------- */
+@media (max-width: 860px) {
+  .grid-list-wrap { display: none; }   /* the names live inline on narrow screens */
+  .gband {
+    grid-template-columns: 1fr;
+    min-height: auto;
+    gap: 14px;
+    padding: 8vh var(--pad);
+  }
+  .gband__zone { grid-column: 1; flex-wrap: wrap; justify-content: flex-start; }
+  .gband__num { position: static; margin-bottom: 8px; }
+  .gthumb--lg, .gthumb--sm, .gthumb--tall { width: 44vw; }
+  .gband__zone--left .gthumb:nth-child(2) { margin-top: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grid-list-wrap .work-list__marker { transition: none; }
+}
