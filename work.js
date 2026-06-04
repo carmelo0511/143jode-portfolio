@@ -22,7 +22,7 @@
      (ref style, one line); url = "Visit site" target ("#" until a real one
      is wired); desc = the longer blurb (kept for future use). */
   var PROJECTS = [
-    { name: "Holidays",     meta: "Holiday-themed side projects",  url: "#", desc: "Small, holiday themed side project websites" },
+    { name: "TIF AFTERPARTY", meta: "Music video teaser",         url: "#", desc: "Teaser edit for the TIF Afterparty music video." },
     { name: "No Moss",      meta: "'25, final-year capstone",      url: "#", desc: "Capstone project for final year of university. Fullstack web app built with Nuxt 4." },
     { name: "Mtech",        meta: "'25, MTech Consulting Club",    url: "#", desc: "Developed and launched the official website for MTech Consulting Club at The University of Melbourne" },
     { name: "Kora",         meta: "'24, co-founded AI startup",    url: "#", desc: "Co-founded a startup developing an AI model tailored for VCE. Scaled to 6,000+ users with 200 MAU." },

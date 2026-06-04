@@ -16,26 +16,37 @@
 
   /* project order matches the focus view (work.html) + About's Selected Works */
   var PROJECTS = [
-    { name: "Holidays" },
+    { name: "TIF AFTERPARTY" },
     { name: "No Moss" },
     { name: "Mtech" },
     { name: "Kora" },
     { name: "Portfolio V1" }
   ];
-  /* only these placeholder assets exist, so every project reuses them for now */
-  var IMAGES = ["media/img-1.jpg", "media/img-2.jpg", "media/img-3.jpg"];
-  var VIDEO = "media/0.mp4";
+  /* media PER PROJECT — indices are referenced by LAYOUTS below. Real assets land
+     here as they're delivered; projects without them yet fall back to PLACEHOLDER. */
+  var PLACEHOLDER = [
+    { src: "media/img-1.jpg", type: "image" },
+    { src: "media/img-2.jpg", type: "image" },
+    { src: "media/img-3.jpg", type: "image" },
+    { src: "media/0.mp4", type: "video", poster: "media/img-1.jpg" }
+  ];
   var MEDIA = [
-    { src: IMAGES[0], type: "image" },
-    { src: IMAGES[1], type: "image" },
-    { src: IMAGES[2], type: "image" },
-    { src: VIDEO, type: "video", poster: IMAGES[0] }
+    /* 0 — TIF AFTERPARTY: 3 screen stills (landscape) + the teaser (vertical, so it
+       fills the PORTRAIT accent tile) + the SNES cartridge render */
+    [
+      { src: "media/tif-1.jpg", type: "image" },
+      { src: "media/tif-2.jpg", type: "image" },
+      { src: "media/tif-3.jpg", type: "image" },
+      { src: "media/tif.mp4", type: "video", poster: "media/tif-1.jpg" },
+      { src: "media/tif-cartridge.jpg", type: "image" }
+    ],
+    PLACEHOLDER, PLACEHOLDER, PLACEHOLDER, PLACEHOLDER
   ];
   /* per-project tile layout: each entry = [media index into MEDIA, SHAPE class],
      split into LEFT and RIGHT zones. Rotated per project so the shapes/sizes
      differ band to band (the ref mixes landscape / portrait / square tiles). */
   var LAYOUTS = [
-    { left: [[1, "sm"], [0, "lg"]], right: [[2, "land"], [3, "port"], [0, "land"], [1, "land"]] },
+    { left: [[1, "sm"], [0, "lg"]], right: [[2, "land"], [3, "port"], [0, "land"], [4, "land"]] },   // TIF — screens + teaser(accent) + cartridge
     { left: [[0, "sm"], [2, "lg"]], right: [[1, "land"], [3, "port"], [0, "land"], [2, "land"]] },
     { left: [[1, "sm"], [2, "lg"]], right: [[0, "land"], [1, "land"], [3, "port"], [2, "land"]] },
     { left: [[2, "sm"], [1, "lg"]], right: [[0, "land"], [3, "port"], [2, "land"], [0, "land"]] },
@@ -48,7 +59,7 @@
      (~16vh), the mid ones sit just under a right LANDSCAPE tile (~14vh) — all
      kept clear of the tall accent (a right PORTRAIT tile, reaching ~36vh). */
   var NUM_POS = [
-    ["3vw", "20vh"],                                         // 0 Holidays — far-left, below the left cluster
+    ["3vw", "20vh"],                                         // 0 TIF AFTERPARTY — far-left, below the left cluster
     ["17vw", "22vh"],                                       // 1 No Moss — left-centre, below the lg tile
     ["51vw", "18vh"],                                        // 2 Mtech — right slot-1, below the landscape
     ["3vw", "27vh"],                                         // 3 Kora — far-left, lower
@@ -131,11 +142,12 @@
     band.appendChild(num);
 
     var lay = LAYOUTS[i] || LAYOUTS[0];
+    var pm = MEDIA[i] || PLACEHOLDER;   // this project's media pool (real assets, or the placeholder fallback)
     var ti = 0;   // tile order within the band → drives the reveal WAVE (CSS --ti)
     var left = document.createElement("div");
     left.className = "gband__zone gband__zone--left";
     lay.left.forEach(function (pair) {
-      var t = makeThumb(MEDIA[pair[0]], "gthumb--" + pair[1], i);
+      var t = makeThumb(pm[pair[0]] || pm[0], "gthumb--" + pair[1], i);
       t.style.setProperty("--ti", String(ti++));
       left.appendChild(t);
     });
@@ -144,7 +156,7 @@
     var right = document.createElement("div");
     right.className = "gband__zone gband__zone--right";
     lay.right.forEach(function (pair) {
-      var t = makeThumb(MEDIA[pair[0]], "gthumb--" + pair[1], i);
+      var t = makeThumb(pm[pair[0]] || pm[0], "gthumb--" + pair[1], i);
       t.style.setProperty("--ti", String(ti++));
       right.appendChild(t);
     });
