@@ -198,6 +198,7 @@ body.works-grid video::-webkit-media-controls-start-playback-button {
   z-index: 30;
   pointer-events: none;
   white-space: nowrap;
+  view-transition-name: vt-author;   /* shared with the focus view → stays put across grid↔focus */
 }
 
 /* hide the native scrollbar (the page is the only scroll indicator) */
@@ -213,10 +214,17 @@ body.works-grid::-webkit-scrollbar { width: 0; height: 0; display: none; }
     gap: 14px;
     padding: 8vh var(--pad);
   }
-  .gband__zone { grid-column: 1; flex-wrap: wrap; justify-content: flex-start; }
+  .gband__zone { grid-column: 1; flex-wrap: wrap; justify-content: flex-start; gap: clamp(8px, 2vw, 14px); }
   .gband__num { position: static; margin-bottom: 8px; }
-  .gthumb--lg, .gthumb--sm, .gthumb--tall { width: 44vw; }
-  .gband__zone--left .gthumb:nth-child(2) { margin-top: 0; }
+  /* consistent 2-up tiles: cancel the right zone's flex-fill so width wins (else its
+     4 tiles squeeze into one tiny row while the left ones stay big) */
+  .gband__zone--right .gthumb { flex: 0 1 auto; }
+  .gthumb--lg, .gthumb--sm, .gthumb--tall, .gthumb--land, .gthumb--port { width: 44vw; }
+  .gband__zone--left .gthumb:nth-child(2) { margin-top: 0; transform: none; }   /* drop the desktop stagger offset */
+  /* the name column is hidden on mobile; let the maker's name FLOW at the end of the
+     bands (left-aligned) rather than stay fixed over the scrolling thumbnails — and
+     drop its vt-name so it doesn't fight the stacked layout */
+  .grid-author { position: static; left: auto; bottom: auto; margin: 4px var(--pad) 7vh; view-transition-name: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -5,6 +5,10 @@
 _research/
 MISSION.md
 
+# Sanity Studio — a SEPARATE app (its own deps + deploy via `sanity deploy`);
+# the static portfolio that Vercel serves doesn't include it
+studio-143jode/
+
 # Vercel
 .vercel/
 
