@@ -202,6 +202,7 @@ body.works-grid video::-webkit-media-controls-start-playback-button {
   z-index: 30;
   pointer-events: none;
   white-space: nowrap;
+  view-transition-name: vt-author;   /* shared with the focus + about authors → "143jode" stays put across grid↔focus↔about */
 }
 
 /* hide the native scrollbar (the page is the only scroll indicator) */
