@@ -114,7 +114,7 @@ if (projects.length === 0) {
 // ---- 1. data.js (the grid) ----
 writeFileSync(
   root('data.js'),
-  `/* AUTO-GENERATED from Sanity (${PROJECT}/${DATASET}) at build time. Do not edit by hand. */\n` +
+  `/* AUTO-GENERATED from Sanity (${PROJECT}/${DATASET}); built ${process.env.VERCEL ? 'on Vercel' : 'locally'}. Do not edit by hand. */\n` +
     `window.SITE_PROJECTS = ${JSON.stringify(projects, null, 2)};\n`,
 )
 

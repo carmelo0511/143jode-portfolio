@@ -1,4 +1,4 @@
-/* AUTO-GENERATED from Sanity (rix2lzom/production) at build time. Do not edit by hand. */
+/* AUTO-GENERATED from Sanity (rix2lzom/production); built locally. Do not edit by hand. */
 window.SITE_PROJECTS = [
   {
     "name": "TIF AFTERPARTY",
