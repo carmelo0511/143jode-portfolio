@@ -441,11 +441,6 @@ html.no-js .pwipe { display: none; }
 .work-list li[data-i="2"] .wl, .about-works .sw[data-i="2"] { view-transition-name: vt-work-2; }
 .work-list li[data-i="3"] .wl, .about-works .sw[data-i="3"] { view-transition-name: vt-work-3; }
 .work-list li[data-i="4"] .wl, .about-works .sw[data-i="4"] { view-transition-name: vt-work-4; }
-.work-list li[data-i="5"] .wl, .about-works .sw[data-i="5"] { view-transition-name: vt-work-5; }
-.work-list li[data-i="6"] .wl, .about-works .sw[data-i="6"] { view-transition-name: vt-work-6; }
-.work-list li[data-i="7"] .wl, .about-works .sw[data-i="7"] { view-transition-name: vt-work-7; }
-.work-list li[data-i="8"] .wl, .about-works .sw[data-i="8"] { view-transition-name: vt-work-8; }
-.work-list li[data-i="9"] .wl, .about-works .sw[data-i="9"] { view-transition-name: vt-work-9; }
 
 /* the words MORPH: each glides HORIZONTALLY (its box-top is identical on both
    pages, so it never travels up or down) while it scales between its two roles —
@@ -460,11 +455,6 @@ html.no-js .pwipe { display: none; }
 ::view-transition-group(vt-work-2),
 ::view-transition-group(vt-work-3),
 ::view-transition-group(vt-work-4),
-::view-transition-group(vt-work-5),
-::view-transition-group(vt-work-6),
-::view-transition-group(vt-work-7),
-::view-transition-group(vt-work-8),
-::view-transition-group(vt-work-9),
 ::view-transition-group(vt-hero) {                      /* the grid thumbnail zooming into the focus preview */
   animation-duration: 0.7s;                             /* each word's move (shorter -> the stagger reads) */
   animation-timing-function: cubic-bezier(0.62, 0, 0.2, 1);
@@ -483,11 +473,6 @@ html.no-js .pwipe { display: none; }
 ::view-transition-group(vt-work-2)   { animation-delay: 0.48s; }
 ::view-transition-group(vt-work-3)   { animation-delay: 0.60s; }
 ::view-transition-group(vt-work-4)   { animation-delay: 0.72s; }
-::view-transition-group(vt-work-5)   { animation-delay: 0.84s; }
-::view-transition-group(vt-work-6)   { animation-delay: 0.96s; }
-::view-transition-group(vt-work-7)   { animation-delay: 1.08s; }
-::view-transition-group(vt-work-8)   { animation-delay: 1.20s; }
-::view-transition-group(vt-work-9)   { animation-delay: 1.32s; }
 
 /* WORDS LEAD, CONTENT FOLLOWS: the old page clears to white FAST (0.25s), the
    words cascade across the near-empty window, and only THEN — after a delay —

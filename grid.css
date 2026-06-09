@@ -119,6 +119,10 @@ body.works-grid {
   pointer-events: none;
 }
 
+/* per-band project name — desktop shows names in the fixed centre list, so it's
+   hidden here; the mobile breakpoint reveals it as each band's title */
+.gband__name { display: none; }
+
 /* thumbnails — clean, rounded, a little size variety for an editorial feel.
    each is a LINK into the focus view; the video tiles loop silently. */
 .gthumb {
@@ -198,7 +202,6 @@ body.works-grid video::-webkit-media-controls-start-playback-button {
   z-index: 30;
   pointer-events: none;
   white-space: nowrap;
-  view-transition-name: vt-author;   /* shared with the focus view → stays put across grid↔focus */
 }
 
 /* hide the native scrollbar (the page is the only scroll indicator) */
@@ -207,24 +210,47 @@ body.works-grid::-webkit-scrollbar { width: 0; height: 0; display: none; }
 
 /* ---------- Responsive ------------------------------------- */
 @media (max-width: 860px) {
-  .grid-list-wrap { display: none; }   /* the names live inline on narrow screens */
+  /* the fixed centre name-list can't fit a phone — hide it and surface each
+     project's name inside its own band (.gband__name) instead */
+  .grid-list-wrap { display: none; }
+  /* drop the desktop 50vh name-line offset; just clear the fixed header */
+  .grid-bands { padding-top: clamp(96px, 16vh, 150px); padding-bottom: 10vh; }
+
   .gband {
     grid-template-columns: 1fr;
     min-height: auto;
-    gap: 14px;
-    padding: 8vh var(--pad);
+    gap: 12px;
+    padding: 5vh var(--pad);
   }
-  .gband__zone { grid-column: 1; flex-wrap: wrap; justify-content: flex-start; gap: clamp(8px, 2vw, 14px); }
-  .gband__num { position: static; margin-bottom: 8px; }
-  /* consistent 2-up tiles: cancel the right zone's flex-fill so width wins (else its
-     4 tiles squeeze into one tiny row while the left ones stay big) */
-  .gband__zone--right .gthumb { flex: 0 1 auto; }
-  .gthumb--lg, .gthumb--sm, .gthumb--tall, .gthumb--land, .gthumb--port { width: 44vw; }
-  .gband__zone--left .gthumb:nth-child(2) { margin-top: 0; transform: none; }   /* drop the desktop stagger offset */
-  /* the name column is hidden on mobile; let the maker's name FLOW at the end of the
-     bands (left-aligned) rather than stay fixed over the scrolling thumbnails — and
-     drop its vt-name so it doesn't fight the stacked layout */
-  .grid-author { position: static; left: auto; bottom: auto; margin: 4px var(--pad) 7vh; view-transition-name: none; }
+  /* band header: number + title share a line above the tiles */
+  .gband__num {
+    position: static;
+    display: inline-block;
+    vertical-align: middle;
+    font-size: clamp(26px, 7vw, 34px);
+    margin: 0 12px 12px 0;
+  }
+  .gband__name {
+    display: inline-block;
+    vertical-align: middle;
+    margin-bottom: 12px;
+    font-size: clamp(15px, 4.4vw, 19px);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+  /* tiles fill the width as a tidy 2-up grid (no cramped flex row) */
+  .gband__zone {
+    grid-column: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+  }
+  .gband__zone .gthumb { width: auto; flex: none; }
+  .gband__zone--left .gthumb:nth-child(2) { margin-top: 0; }
+  .grid-author { position: static; left: auto; bottom: auto; margin: 2vh var(--pad) 7vh; view-transition-name: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {

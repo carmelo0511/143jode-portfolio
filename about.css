@@ -197,6 +197,25 @@ html.entered .about-foot { transition-delay: 0.40s; }
   align-items: baseline;
   gap: clamp(18px, 2.4vw, 46px);
 }
+
+/* maker's name — pinned at the SAME spot as the grid/focus author (shared
+   view-transition-name vt-author) so "143jode" STAYS PUT across works↔about.
+   --list-x mirrors grid.css's formula so the x matches exactly. */
+body.about { --list-x: calc(var(--pad) + clamp(55px, 5.6vw, 88px) + clamp(40px, 6vw, 150px) + max(160px, 15vw) + clamp(36px, 4.5vw, 100px)); }
+.about-author {
+  position: fixed;
+  left: var(--list-x);
+  bottom: clamp(16px, 3vh, 32px);
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--ink);
+  z-index: 31;
+  pointer-events: none;
+  white-space: nowrap;
+  view-transition-name: vt-author;
+}
 .about-social {
   display: flex;
   gap: clamp(16px, 1.6vw, 30px);
@@ -226,6 +245,9 @@ html.no-js body.about .cover { display: none; }
   .about-works { width: auto; }
   .about-col--bio,
   .about-col--works { grid-column: 1; grid-row: auto; }
+  /* the maker's name flows in normal order on mobile (not pinned), like the grid/
+     focus authors, and drops its vt-name */
+  .about-author { position: static; left: auto; bottom: auto; margin: 0 var(--pad); view-transition-name: none; }
   /* footer: unpin and stack on narrow */
   .about-foot {
     position: static;

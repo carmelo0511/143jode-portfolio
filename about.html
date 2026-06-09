@@ -13,8 +13,8 @@
     rel="stylesheet"
     href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap"
   />
-  <link rel="stylesheet" href="styles.css?v=31" />
-  <link rel="stylesheet" href="about.css?v=18" />
+  <link rel="stylesheet" href="styles.css?v=30" />
+  <link rel="stylesheet" href="about.css?v=19" />
 
   <script>
     /* Intro gate — show the counting-number loader on the FIRST load of the
@@ -86,24 +86,25 @@
              line at a DIFFERENT x — names sit SCATTERED mid-prose like the ref, yet
              still one-per-line (same y as the grid list → the morph slides each
              word purely sideways, a different distance each). Names keep vt-work-*. -->
-        <div class="about-works"><!-- SANITY:selected -->
-<span class="sw-num">(01)</span> <span class="sw" data-i="0">TIF AFTERPARTY</span><span class="sw-desc"> is a music-video teaser with a retro SNES-cartridge aesthetic. </span><span class="sw-num">(02)</span> <span class="sw" data-i="1">Vybz x Citadium</span><span class="sw-desc"> is a back-to-school campaign I directed for Citadium × Vybz. </span><span class="sw-num">(03)</span> <span class="sw" data-i="2">Mamacita</span><span class="sw-desc"> is a visualizer I made for Bad Bunny's Mamacita, hosted by DJ Orma. </span><span class="sw-num">(04)</span> <span class="sw" data-i="3">BigKid</span><span class="sw-desc"> is the title sequence and scenes I made for BigKid (Casa 2025). </span><span class="sw-num">(05)</span> <span class="sw" data-i="4">Blankk</span><span class="sw-desc"> is the anniversary visual I made for the Blankk × KK Club night.</span>
-<!-- /SANITY:selected --></div>
+        <div class="about-works"><span class="sw-num">(01)</span> <span class="sw" data-i="0">TIF AFTERPARTY</span><span class="sw-desc"> is a music-video teaser with a retro SNES-cartridge aesthetic. </span><span class="sw-num">(02)</span> <span class="sw" data-i="1">Vybz x Citadium</span><span class="sw-desc"> is a back-to-school campaign I directed for Citadium × Vybz. </span><span class="sw-num">(03)</span> <span class="sw" data-i="2">Mamacita</span><span class="sw-desc"> is a visualizer I made for Bad Bunny's Mamacita, hosted by DJ Orma. </span><span class="sw-num">(04)</span> <span class="sw" data-i="3">BigKid</span><span class="sw-desc"> is the title sequence and scenes I made for BigKid (Casa 2025). </span><span class="sw-num">(05)</span> <span class="sw" data-i="4">Blankk</span><span class="sw-desc"> is the anniversary visual I made for the Blankk × KK Club night. </span><span class="sw-num">(06)</span> <span class="sw" data-i="5">Project 06</span><span class="sw-desc"> is a placeholder for an upcoming piece — new work is landing here very soon. </span><span class="sw-num">(07)</span> <span class="sw" data-i="6">Project 07</span><span class="sw-desc"> is a placeholder for the next drop, with fresh visuals on the way shortly. </span><span class="sw-num">(08)</span> <span class="sw" data-i="7">Project 08</span><span class="sw-desc"> is reserved for an upcoming collaboration — details to be revealed soon. </span><span class="sw-num">(09)</span> <span class="sw" data-i="8">Project 09</span><span class="sw-desc"> is a placeholder slot; a new motion piece will live here before long. </span><span class="sw-num">(10)</span> <span class="sw" data-i="9">Project 10</span><span class="sw-desc"> is the last open slot for now — more work is on its way very soon.</span></div>
       </section>
 
     </div>
 
-    <!-- footer bar (ref: status left · name + socials centre · rights right) -->
+    <!-- maker's name — SAME fixed spot + shared view-transition-name (vt-author) as
+         the grid/focus author, so "143jode" STAYS PUT across the works↔about
+         navigation. Kept OUTSIDE .about-foot so the footer's entrance fade and its
+         flex centring never touch it. -->
+    <p class="about-author">143jode</p>
+
+    <!-- footer bar (ref: status left · socials centre · rights right) -->
     <footer class="about-foot">
       <span class="about-foot__status">Currently available for work in 2026.</span>
-      <span class="about-foot__mid">
-        <span class="about-foot__name">143jode</span>
-        <nav class="about-social" aria-label="Social">
-          <a href="#">linkedin</a>
-          <a href="https://www.behance.net/MamadouJode" target="_blank" rel="noopener noreferrer">behance</a>
-          <a href="https://www.instagram.com/143jode" target="_blank" rel="noopener noreferrer">instagram</a>
-        </nav>
-      </span>
+      <nav class="about-social about-foot__mid" aria-label="Social">
+        <a href="#">linkedin</a>
+        <a href="https://www.behance.net/MamadouJode" target="_blank" rel="noopener noreferrer">behance</a>
+        <a href="https://www.instagram.com/143jode" target="_blank" rel="noopener noreferrer">instagram</a>
+      </nav>
       <span class="about-foot__rights">All rights reserved &reg;</span>
     </footer>
   </main>

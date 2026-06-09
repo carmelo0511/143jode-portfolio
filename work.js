@@ -18,21 +18,21 @@
   var narrow = window.matchMedia("(max-width: 860px)");
 
   /* ---- project data (order matches the rail + list) --------
-     Build-time content: data.js (generated from Sanity) sets window.SITE_PROJECTS
-     and loads BEFORE this script; we map the CMS fields to what the focus header
-     uses (meta = the context line; url = "Visit site"; desc = the blurb). The rail
-     + list DOM is ALSO build-injected (work.html) from the same source, so they
-     always match. Falls back to the baked list if data.js is missing. */
-  var FALLBACK = [
-    { name: "TIF AFTERPARTY", meta: "Music video teaser", url: "#", desc: "Teaser edit for the TIF Afterparty music video." },
-    { name: "Vybz x Citadium", meta: "Citadium × Vybz", url: "#", desc: "Back-to-school campaign visuals for Citadium × Vybz." },
-    { name: "Mamacita", meta: "Bad Bunny — Mamacita", url: "#", desc: "Visualizer for Bad Bunny's Mamacita (DJ Orma)." },
-    { name: "BigKid", meta: "BigKid — Casa 2025", url: "#", desc: "Title scenes for BigKid (Casa 2025)." },
-    { name: "Blankk", meta: "Blankk anniversary", url: "#", desc: "Anniversary visuals for the Blankk / KK Club night." }
+     meta = the short date/context line shown next to Contact in the header
+     (ref style, one line); url = "Visit site" target ("#" until a real one
+     is wired); desc = the longer blurb (kept for future use). */
+  var PROJECTS = [
+    { name: "TIF AFTERPARTY", meta: "Music video teaser",         url: "#", desc: "Teaser edit for the TIF Afterparty music video." },
+    { name: "Vybz x Citadium", meta: "Citadium × Vybz",      url: "#", desc: "Back-to-school campaign visuals for Citadium × Vybz." },
+    { name: "Mamacita",        meta: "Bad Bunny — Mamacita", url: "#", desc: "Visualizer for Bad Bunny's Mamacita (DJ Orma)." },
+    { name: "BigKid",          meta: "BigKid — Casa 2025",   url: "#", desc: "Title scenes for BigKid (Casa 2025)." },
+    { name: "Blankk",          meta: "Blankk anniversary",        url: "#", desc: "Anniversary visuals for the Blankk / KK Club night." },
+    { name: "Project 06",      meta: "Coming soon",               url: "#", desc: "Placeholder — rename and add media." },
+    { name: "Project 07",      meta: "Coming soon",               url: "#", desc: "Placeholder — rename and add media." },
+    { name: "Project 08",      meta: "Coming soon",               url: "#", desc: "Placeholder — rename and add media." },
+    { name: "Project 09",      meta: "Coming soon",               url: "#", desc: "Placeholder — rename and add media." },
+    { name: "Project 10",      meta: "Coming soon",               url: "#", desc: "Placeholder — rename and add media." }
   ];
-  var PROJECTS = (window.SITE_PROJECTS && window.SITE_PROJECTS.length)
-    ? window.SITE_PROJECTS.map(function (p) { return { name: p.name, meta: p.context || "", url: p.visitUrl || "#", desc: p.description || "" }; })
-    : FALLBACK;
 
   var shot = document.getElementById("workShot");
   var marker = document.getElementById("workMarker");

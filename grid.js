@@ -14,57 +14,77 @@
 
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  /* ---- project data --------------------------------------------------------
-     Build-time content: `data.js` (generated from Sanity) sets window.SITE_PROJECTS
-     and is loaded BEFORE this script, so names + media are present SYNCHRONOUSLY
-     (the cross-document morphs + intro need them at first paint). If it's missing
-     (e.g. a failed build), fall back to the last-known projects so the site never
-     blanks. Shape: { name, context, description, visitUrl, video, poster, images[] }. */
-  var FALLBACK = [
-    { name: "TIF AFTERPARTY", context: "Music video teaser", description: "is a music-video teaser with a retro SNES-cartridge aesthetic.", visitUrl: "", video: "media/tif.mp4", poster: "media/tif-1.jpg", images: ["media/tif-1.jpg", "media/tif-2.jpg", "media/tif-3.jpg", "media/tif-cartridge.jpg"] },
-    { name: "Vybz x Citadium", context: "Citadium × Vybz", description: "is a back-to-school campaign I directed for Citadium × Vybz.", visitUrl: "", video: "media/vybz.mp4", poster: "media/vybz-2.jpg", images: ["media/vybz-1.jpg", "media/vybz-2.jpg", "media/vybz-3.jpg"] },
-    { name: "Mamacita", context: "Bad Bunny — Mamacita", description: "is a visualizer I made for Bad Bunny's Mamacita, hosted by DJ Orma.", visitUrl: "", video: "media/mama.mp4", poster: "media/mama-1.jpg", images: ["media/mama-1.jpg", "media/mama-2.jpg", "media/mama-3.jpg"] },
-    { name: "BigKid", context: "BigKid — Casa 2025", description: "is the title sequence and scenes I made for BigKid (Casa 2025).", visitUrl: "", video: "media/bigkid.mp4", poster: "media/bigkid-1.jpg", images: ["media/bigkid-1.jpg", "media/bigkid-2.jpg", "media/bigkid-3.jpg"] },
-    { name: "Blankk", context: "Blankk anniversary", description: "is the anniversary visual I made for the Blankk / KK Club night.", visitUrl: "", video: "media/blankk.mp4", poster: "media/blankk-2.jpg", images: ["media/blankk-1.jpg", "media/blankk-2.jpg", "media/blankk-3.jpg"] }
+  /* project order matches the focus view (work.html) + About's Selected Works */
+  var PROJECTS = [
+    { name: "TIF AFTERPARTY" },
+    { name: "Vybz x Citadium" },
+    { name: "Mamacita" },
+    { name: "BigKid" },
+    { name: "Blankk" },
+    { name: "Project 06" },   // placeholders — rename + add a MEDIA[] entry as real assets land
+    { name: "Project 07" },
+    { name: "Project 08" },
+    { name: "Project 09" },
+    { name: "Project 10" }
   ];
-  var SITE = (window.SITE_PROJECTS && window.SITE_PROJECTS.length) ? window.SITE_PROJECTS : FALLBACK;
-  var PROJECTS = SITE.map(function (p) { return { name: p.name }; });
-
-  /* media → tiles: a project's images + video are slotted GENERICALLY into a band's
-     shapes (data.js carries no tile info — layout is the frontend's job). The lone
-     PORT (tall) accent prefers a clearly-PORTRAIT image (orientation read from the
-     Sanity CDN filename dims), else the video, else the first image; the video, if
-     not the accent, drops into a landscape slot; other slots cycle the images. */
-  function imgDims(u) { var m = (u || "").match(/-(\d+)x(\d+)\.\w+(?:\?|$)/); return m ? { w: +m[1], h: +m[2] } : null; }
-  function tileSlotter(project) {
-    project = project || {};
-    var images = (project.images || []).filter(Boolean);
-    var video = project.video ? { src: project.video, type: "video", poster: project.poster || images[0] || project.video } : null;
-    var portrait = null, best = 1.15;
-    images.forEach(function (u) { var d = imgDims(u); if (d && d.h / d.w > best) { best = d.h / d.w; portrait = u; } });
-    var accent = portrait ? { src: portrait, type: "image" } : (video || (images[0] ? { src: images[0], type: "image" } : null));
-    var rest = [];
-    images.forEach(function (u) { if (!(accent && accent.type === "image" && accent.src === u)) rest.push({ src: u, type: "image" }); });
-    if (video && accent !== video) rest.push(video);
-    if (!rest.length) rest = [accent || { src: "", type: "image" }];
-    var ri = 0;
-    return function (shape) {
-      if (shape === "port" && accent) return accent;
-      var m = rest[ri % rest.length]; ri += 1; return m;
-    };
-  }
-
-  /* per-project tile layout: each entry = [_, SHAPE class] — only the SHAPE is used
-     now (sm/lg = left cluster, land = row, port = the tall accent); the media is
-     assigned by tileSlotter above. Rotated per band for visual variety; cycles for
-     projects beyond the 10th. */
+  /* media PER PROJECT — indices are referenced by LAYOUTS below. Real assets land
+     here as they're delivered; projects without them yet fall back to PLACEHOLDER. */
+  var PLACEHOLDER = [
+    { src: "media/img-1.jpg", type: "image" },
+    { src: "media/img-2.jpg", type: "image" },
+    { src: "media/img-3.jpg", type: "image" },
+    { src: "media/0.mp4", type: "video", poster: "media/img-1.jpg" }
+  ];
+  var MEDIA = [
+    /* 0 — TIF AFTERPARTY: 3 screen stills (landscape) + the teaser (vertical, so it
+       fills the PORTRAIT accent tile) + the SNES cartridge render */
+    [
+      { src: "media/tif-1.jpg", type: "image" },
+      { src: "media/tif-2.jpg", type: "image" },
+      { src: "media/tif-3.jpg", type: "image" },
+      { src: "media/tif.mp4", type: "video", poster: "media/tif-1.jpg" },
+      { src: "media/tif-cartridge.jpg", type: "image" }
+    ],
+    /* 1 — Vybz x Citadium: the vertical STORY still fills the PORTRAIT accent (idx3);
+       the landscape teaser (idx1) + screen stills fill the row */
+    [
+      { src: "media/vybz-1.jpg", type: "image" },
+      { src: "media/vybz.mp4", type: "video", poster: "media/vybz-2.jpg" },
+      { src: "media/vybz-2.jpg", type: "image" },
+      { src: "media/vybz-3.jpg", type: "image" }
+    ],
+    /* 2 — Mamacita (Bad Bunny): the vertical teaser (idx3) fills the accent; frames row */
+    [
+      { src: "media/mama-1.jpg", type: "image" },
+      { src: "media/mama-2.jpg", type: "image" },
+      { src: "media/mama-3.jpg", type: "image" },
+      { src: "media/mama.mp4", type: "video", poster: "media/mama-1.jpg" }
+    ],
+    /* 3 — BigKid: the ultrawide scene clip (idx1) sits in a wide tile; the BigKid logo accents */
+    [
+      { src: "media/bigkid-1.jpg", type: "image" },
+      { src: "media/bigkid.mp4", type: "video", poster: "media/bigkid-1.jpg" },
+      { src: "media/bigkid-2.jpg", type: "image" },
+      { src: "media/bigkid-3.jpg", type: "image" }
+    ],
+    /* 4 — Blankk anniversary: the KK-club display loop (idx2) + stills */
+    [
+      { src: "media/blankk-1.jpg", type: "image" },
+      { src: "media/blankk-2.jpg", type: "image" },
+      { src: "media/blankk.mp4", type: "video", poster: "media/blankk-2.jpg" },
+      { src: "media/blankk-3.jpg", type: "image" }
+    ]
+  ];
+  /* per-project tile layout: each entry = [media index into MEDIA, SHAPE class],
+     split into LEFT and RIGHT zones. Rotated per project so the shapes/sizes
+     differ band to band (the ref mixes landscape / portrait / square tiles). */
   var LAYOUTS = [
     { left: [[1, "sm"], [0, "lg"]], right: [[2, "land"], [3, "port"], [0, "land"], [4, "land"]] },   // TIF — screens + teaser(accent) + cartridge
     { left: [[0, "sm"], [2, "lg"]], right: [[1, "land"], [3, "port"], [0, "land"], [2, "land"]] },
     { left: [[1, "sm"], [2, "lg"]], right: [[0, "land"], [1, "land"], [3, "port"], [2, "land"]] },
     { left: [[2, "sm"], [1, "lg"]], right: [[0, "land"], [3, "port"], [2, "land"], [0, "land"]] },
     { left: [[3, "sm"], [0, "lg"]], right: [[2, "land"], [1, "port"], [0, "land"], [1, "land"]] },
-    /* 5–9 placeholders (PLACEHOLDER pool has 4 items: idx 0–3) */
+    /* 5–9 placeholders draw from the PLACEHOLDER pool (4 items: idx 0–3) */
     { left: [[1, "sm"], [0, "lg"]], right: [[2, "land"], [3, "port"], [0, "land"], [1, "land"]] },   // 5
     { left: [[0, "sm"], [2, "lg"]], right: [[1, "land"], [3, "port"], [2, "land"], [0, "land"]] },   // 6
     { left: [[2, "sm"], [1, "lg"]], right: [[0, "land"], [1, "land"], [3, "port"], [2, "land"]] },   // 7
@@ -162,17 +182,25 @@
     var num = document.createElement("span");
     num.className = "gband__num";
     num.textContent = (i + 1 < 10 ? "0" : "") + (i + 1);
-    var np = NUM_POS[i % NUM_POS.length];
-    if (np) { num.style.left = np[0]; num.style.top = np[1]; }
+    if (NUM_POS[i]) { num.style.left = NUM_POS[i][0]; num.style.top = NUM_POS[i][1]; }
     band.appendChild(num);
 
-    var lay = LAYOUTS[i % LAYOUTS.length];
-    var slot = tileSlotter(SITE[i]);   // media per tile: accent → PORT, images cycle the rest
+    // project NAME per band — hidden on desktop (the fixed centre list shows names
+    // there); revealed on narrow screens so mobile users get titles. Opens the focus view.
+    var nm = document.createElement("a");
+    nm.className = "gband__name";
+    nm.href = "work.html";
+    nm.textContent = p.name;
+    nm.addEventListener("click", function (e) { e.preventDefault(); focusProject(i, null); });
+    band.appendChild(nm);
+
+    var lay = LAYOUTS[i] || LAYOUTS[0];
+    var pm = MEDIA[i] || PLACEHOLDER;   // this project's media pool (real assets, or the placeholder fallback)
     var ti = 0;   // tile order within the band → drives the reveal WAVE (CSS --ti)
     var left = document.createElement("div");
     left.className = "gband__zone gband__zone--left";
     lay.left.forEach(function (pair) {
-      var t = makeThumb(slot(pair[1]), "gthumb--" + pair[1], i);
+      var t = makeThumb(pm[pair[0]] || pm[0], "gthumb--" + pair[1], i);
       t.style.setProperty("--ti", String(ti++));
       left.appendChild(t);
     });
@@ -181,7 +209,7 @@
     var right = document.createElement("div");
     right.className = "gband__zone gband__zone--right";
     lay.right.forEach(function (pair) {
-      var t = makeThumb(slot(pair[1]), "gthumb--" + pair[1], i);
+      var t = makeThumb(pm[pair[0]] || pm[0], "gthumb--" + pair[1], i);
       t.style.setProperty("--ti", String(ti++));
       right.appendChild(t);
     });

@@ -247,13 +247,12 @@ html::-webkit-scrollbar { width: 0; height: 0; display: none; } /* Safari / Chro
 /* creator name — sits at the foot of the meta column, like the ref's
    "Grégory Lallé" beneath the project list (no per-project blurb anymore) */
 /* mirror the grid's name-column x (same formula as grid.css --list-x) so the fixed
-   author lands at the SAME viewport spot on both pages. */
+   author lands at the SAME viewport spot on every page. */
 body.work { --list-x: calc(var(--pad) + clamp(55px, 5.6vw, 88px) + clamp(40px, 6vw, 150px) + max(160px, 15vw) + clamp(36px, 4.5vw, 100px)); }
 .work-author {
-  /* SAME spot as the grid's author (fixed, bottom-left under the names column) + a
-     shared view-transition-name, so 143jode STAYS PUT on the grid↔focus navigation
-     instead of jumping/crossfading — like the project names, which resize in place.
-     Pinned to the viewport bottom, so it's always visible with the full 10 list. */
+  /* SAME fixed spot + shared vt-author as the grid + about authors, so "143jode"
+     STAYS PUT across every navigation (works↔about↔focus) — and pinned to the
+     viewport bottom so it's always visible under the full 10-project list. */
   position: fixed;
   left: var(--list-x);
   bottom: clamp(16px, 3vh, 32px);
@@ -377,8 +376,6 @@ html.no-js body.work .cover { display: none; }
   .proj { grid-template-columns: 1fr; } /* number stacked over its thumbnails */
   .proj__num { position: static; font-size: clamp(36px, 12vw, 54px); margin-bottom: 8px; }
   .proj__thumbs { grid-column: 1; }
-  /* on narrow screens the author flows below the list (not pinned) and drops its
-     vt-name so it doesn't fight the stacked mobile layout */
   .work-author { position: static; left: auto; bottom: auto; margin-top: 14px; view-transition-name: none; }
   .work-list-wrap { max-width: none; }
   /* the active item is already bold; drop the far-right marker on narrow screens */
