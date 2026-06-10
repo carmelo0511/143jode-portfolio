@@ -97,23 +97,17 @@
   } catch (_) {}
   if (wantsEdit) loadEditor();
 
-  /* hidden trigger: DOUBLE-CLICK (or double-tap) the "143jode"
-     signature to open the editor — no special URL needed. A stray
-     double-click just shows the password box; Cancel backs out. */
+  /* hidden trigger: one CLICK on "All rights reserved ®" in the
+     About footer opens the editor — no special URL needed. A stray
+     click just shows the password box; Cancel backs out. */
   if (!wantsEdit) {
-    var taps = 0, tapTimer = null;
-    all(".grid-author, .work-author, .about-author").forEach(function (sig) {
-      sig.style.cursor = "default";
-      sig.addEventListener("click", function () {
-        taps++;
-        if (tapTimer) clearTimeout(tapTimer);
-        tapTimer = setTimeout(function () { taps = 0; }, 800);
-        if (taps >= 2) {
-          taps = 0;
-          try { sessionStorage.setItem("editorOn", "1"); } catch (_) {}
-          loadEditor();
-        }
+    var rights = document.querySelector(".about-foot__rights");
+    if (rights) {
+      rights.style.cursor = "pointer";
+      rights.addEventListener("click", function () {
+        try { sessionStorage.setItem("editorOn", "1"); } catch (_) {}
+        loadEditor();
       });
-    });
+    }
   }
 })();
