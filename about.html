@@ -13,8 +13,18 @@
     rel="stylesheet"
     href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap"
   />
-  <link rel="stylesheet" href="styles.css?v=32" />
+  <link rel="stylesheet" href="styles.css?v=37" />
   <link rel="stylesheet" href="about.css?v=20" />
+
+  <!-- Three.js for the live 3D logo in the bio (logo3d.js) -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+      }
+    }
+  </script>
 
   <script>
     /* Intro gate — show the counting-number loader on the FIRST load of the
@@ -73,7 +83,7 @@
   <main class="about-main">
     <div class="about-grid">
       <section class="about-col about-col--bio">
-        <h2 class="about-col__head">Bio</h2>
+        <h2 class="about-col__head">Bio <span class="logo3d" id="logo3d" aria-hidden="true"></span></h2>
         <!-- bio sized to ~5 lines in the column (ref-style block) -->
         <p>Mamadou, a 29 y.o. 2D/3D artist based in Paris, France. I craft characters, environments and motion design — turning ideas into bold, immersive visuals for brands, films and interactive experiences, where story and a love of detail sit at the heart of every single frame.</p>
       </section>
@@ -113,5 +123,6 @@
   <script src="apply-content.js?v=6"></script>
   <script src="intro.js?v=7"></script>
   <script src="about.js?v=3"></script>
+  <script type="module" src="logo3d.js?v=8"></script>
 </body>
 </html>

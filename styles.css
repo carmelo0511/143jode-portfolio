@@ -666,3 +666,86 @@ html.intro-run.intro-done .about-social {
   html.intro-run.intro-done .about-main { transform: none; opacity: 1; transition: none; }
   .ttl-i { animation: none; }
 }
+
+/* ============================================================
+   3D logo — the client's mark rendered live (Three.js) inside the
+   fixed header, immediately left of "Works,". The header is fixed,
+   so the logo stays on top while the page scrolls. logo3d.js mounts
+   a transparent <canvas> here (or an SVG <img> fallback).
+   ============================================================ */
+.logo3d {
+  display: block;
+  position: relative;
+  pointer-events: none;   /* purely visual — never blocks nav clicks */
+  align-self: flex-start;
+  flex: 0 0 auto;
+  opacity: 0;             /* fades in once the model is ready */
+  transition: opacity 0.7s var(--ease);
+  /* NO view-transition-name: the cross-page move is a custom spring
+     "flight" (logo3d.js) — a browser morph on top would double it */
+}
+.logo3d.is-on { opacity: 1; }
+.logo3d canvas,
+.logo3d img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+/* the page-change still (last frame of the previous page's render) sits
+   on top of the canvas until the live renderer takes over */
+.logo3d__snap {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* the flight proxy: a body-level fixed box that carries the live canvas
+   while it spring-hops from the previous page's spot to its new home —
+   above the headers (z 40) but below the intro overlay */
+.logo3d-flight {
+  position: fixed;
+  z-index: 60;
+  pointer-events: none;
+  will-change: transform, left, top, width, height;
+}
+.logo3d-flight canvas,
+.logo3d-flight img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.logo3d-flight .logo3d__snap {
+  position: absolute;
+  inset: 0;
+}
+
+/* index (works grid): scale with the big "Works," title — its font is
+   clamp(44px,10vw,240px) with cap-trim, so the cap height ≈ 0.72em.
+   Slight negative top nudge optically centres the round mark on the cap. */
+body.works-grid .logo3d {
+  width: clamp(34px, 7.4vw, 176px);
+  height: clamp(34px, 7.4vw, 176px);
+  margin-right: 0.06em;
+}
+
+/* work (focus view): a small mark beside the small nav words */
+body.work .logo3d {
+  width: clamp(24px, 2.2vw, 34px);
+  height: clamp(24px, 2.2vw, 34px);
+  margin-right: 0.3em;
+  margin-top: -4px;       /* optically align the round mark with the cap line */
+}
+
+/* about: the mark sits INLINE beside the "Bio" heading — part of his
+   story, not a header ornament. inline-block + middle keeps the small
+   grey BIO label and the mark on one shared line; it inherits the bio
+   column's entrance fade from about.js. */
+body.about .logo3d {
+  display: inline-block;
+  vertical-align: middle;
+  width: clamp(38px, 3.4vw, 52px);
+  height: clamp(38px, 3.4vw, 52px);
+  margin-left: 10px;
+  margin-top: -4px;       /* optical centre on the BIO cap height */
+}

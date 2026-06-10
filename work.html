@@ -13,8 +13,18 @@
     rel="stylesheet"
     href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap"
   />
-  <link rel="stylesheet" href="styles.css?v=32" />
+  <link rel="stylesheet" href="styles.css?v=37" />
   <link rel="stylesheet" href="work.css?v=16" />
+
+  <!-- Three.js for the live 3D logo in the header (logo3d.js) -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+      }
+    }
+  </script>
 
   <script>
     /* Intro gate — show the counting-number loader on the FIRST load of the
@@ -52,6 +62,7 @@
   <header class="work-head focus-head">
     <a class="focus-index" href="index.html">Index</a>
     <nav class="topnav" aria-label="Primary">
+      <span class="logo3d" id="logo3d" aria-hidden="true"></span>
       <a href="index.html">Works,</a>
       <a href="about.html">About,</a>
       <a href="mailto:hello@143jode.com">Contact</a>
@@ -194,5 +205,6 @@
   <script src="apply-content.js?v=6"></script>
   <script src="intro.js?v=4"></script>
   <script src="work.js?v=17"></script>
+  <script type="module" src="logo3d.js?v=8"></script>
 </body>
 </html>
