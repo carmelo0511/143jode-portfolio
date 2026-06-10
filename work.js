@@ -21,18 +21,13 @@
      meta = the short date/context line shown next to Contact in the header
      (ref style, one line); url = "Visit site" target ("#" until a real one
      is wired); desc = the longer blurb (kept for future use). */
-  var PROJECTS = [
-    { name: "TIF AFTERPARTY", meta: "Music video teaser",         url: "#", desc: "Teaser edit for the TIF Afterparty music video." },
-    { name: "Vybz x Citadium", meta: "Citadium × Vybz",      url: "#", desc: "Back-to-school campaign visuals for Citadium × Vybz." },
-    { name: "Mamacita",        meta: "Bad Bunny — Mamacita", url: "#", desc: "Visualizer for Bad Bunny's Mamacita (DJ Orma)." },
-    { name: "BigKid",          meta: "BigKid — Casa 2025",   url: "#", desc: "Title scenes for BigKid (Casa 2025)." },
-    { name: "Blankk",          meta: "Blankk anniversary",        url: "#", desc: "Anniversary visuals for the Blankk / KK Club night." },
-    { name: "Project 06",      meta: "Coming soon",               url: "#", desc: "Placeholder — rename and add media." },
-    { name: "Project 07",      meta: "Coming soon",               url: "#", desc: "Placeholder — rename and add media." },
-    { name: "Project 08",      meta: "Coming soon",               url: "#", desc: "Placeholder — rename and add media." },
-    { name: "Project 09",      meta: "Coming soon",               url: "#", desc: "Placeholder — rename and add media." },
-    { name: "Project 10",      meta: "Coming soon",               url: "#", desc: "Placeholder — rename and add media." }
-  ];
+  /* project data now lives in content.js (window.SITE_CONTENT) — the single
+     source of truth shared with grid.js + about, and what the inline editor
+     publishes. Same shape as before: name / meta / url / desc. */
+  var SC = window.SITE_CONTENT || { projects: [] };
+  var PROJECTS = SC.projects.map(function (p) {
+    return { name: p.name, meta: p.meta, url: p.url, desc: p.desc };
+  });
 
   var shot = document.getElementById("workShot");
   var marker = document.getElementById("workMarker");

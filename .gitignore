@@ -12,3 +12,4 @@ MISSION.md
 .DS_Store
 *.mov
 Thumbs.db
+.vercel

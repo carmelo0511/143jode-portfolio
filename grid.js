@@ -15,66 +15,15 @@
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   /* project order matches the focus view (work.html) + About's Selected Works */
-  var PROJECTS = [
-    { name: "TIF AFTERPARTY" },
-    { name: "Vybz x Citadium" },
-    { name: "Mamacita" },
-    { name: "BigKid" },
-    { name: "Blankk" },
-    { name: "Project 06" },   // placeholders — rename + add a MEDIA[] entry as real assets land
-    { name: "Project 07" },
-    { name: "Project 08" },
-    { name: "Project 09" },
-    { name: "Project 10" }
-  ];
-  /* media PER PROJECT — indices are referenced by LAYOUTS below. Real assets land
-     here as they're delivered; projects without them yet fall back to PLACEHOLDER. */
-  var PLACEHOLDER = [
-    { src: "media/img-1.jpg", type: "image" },
-    { src: "media/img-2.jpg", type: "image" },
-    { src: "media/img-3.jpg", type: "image" },
-    { src: "media/0.mp4", type: "video", poster: "media/img-1.jpg" }
-  ];
-  var MEDIA = [
-    /* 0 — TIF AFTERPARTY: 3 screen stills (landscape) + the teaser (vertical, so it
-       fills the PORTRAIT accent tile) + the SNES cartridge render */
-    [
-      { src: "media/tif-1.jpg", type: "image" },
-      { src: "media/tif-2.jpg", type: "image" },
-      { src: "media/tif-3.jpg", type: "image" },
-      { src: "media/tif.mp4", type: "video", poster: "media/tif-1.jpg" },
-      { src: "media/tif-cartridge.jpg", type: "image" }
-    ],
-    /* 1 — Vybz x Citadium: the vertical STORY still fills the PORTRAIT accent (idx3);
-       the landscape teaser (idx1) + screen stills fill the row */
-    [
-      { src: "media/vybz-1.jpg", type: "image" },
-      { src: "media/vybz.mp4", type: "video", poster: "media/vybz-2.jpg" },
-      { src: "media/vybz-2.jpg", type: "image" },
-      { src: "media/vybz-3.jpg", type: "image" }
-    ],
-    /* 2 — Mamacita (Bad Bunny): the vertical teaser (idx3) fills the accent; frames row */
-    [
-      { src: "media/mama-1.jpg", type: "image" },
-      { src: "media/mama-2.jpg", type: "image" },
-      { src: "media/mama-3.jpg", type: "image" },
-      { src: "media/mama.mp4", type: "video", poster: "media/mama-1.jpg" }
-    ],
-    /* 3 — BigKid: the ultrawide scene clip (idx1) sits in a wide tile; the BigKid logo accents */
-    [
-      { src: "media/bigkid-1.jpg", type: "image" },
-      { src: "media/bigkid.mp4", type: "video", poster: "media/bigkid-1.jpg" },
-      { src: "media/bigkid-2.jpg", type: "image" },
-      { src: "media/bigkid-3.jpg", type: "image" }
-    ],
-    /* 4 — Blankk anniversary: the KK-club display loop (idx2) + stills */
-    [
-      { src: "media/blankk-1.jpg", type: "image" },
-      { src: "media/blankk-2.jpg", type: "image" },
-      { src: "media/blankk.mp4", type: "video", poster: "media/blankk-2.jpg" },
-      { src: "media/blankk-3.jpg", type: "image" }
-    ]
-  ];
+  /* project data now lives in content.js (window.SITE_CONTENT) — the single
+     source of truth shared with work.js + about, and what the inline editor
+     publishes. PROJECTS keeps the same shape ({name}) the rest of this file
+     expects; MEDIA is each project's media pool (every project has one now,
+     placeholders included). */
+  var SC = window.SITE_CONTENT || { projects: [] };
+  var PROJECTS = SC.projects.map(function (p) { return { name: p.name }; });
+  var PLACEHOLDER = (SC.projects[5] && SC.projects[5].media) || [];
+  var MEDIA = SC.projects.map(function (p) { return p.media; });
   /* per-project tile layout: each entry = [media index into MEDIA, SHAPE class],
      split into LEFT and RIGHT zones. Rotated per project so the shapes/sizes
      differ band to band (the ref mixes landscape / portrait / square tiles). */

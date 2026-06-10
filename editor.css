@@ -1,0 +1,132 @@
+/* ============================================================
+   143jode — INLINE EDITOR STYLES
+   Loaded ONLY in edit mode (?edit). Matches the site's stark
+   black-on-white Satoshi look. Everything is namespaced .ed-*.
+   ============================================================ */
+
+/* editable TEXT: dashed outline on hover, solid while editing */
+.ed-text {
+  cursor: text;
+  outline: 1.5px dashed transparent;
+  outline-offset: 3px;
+  transition: outline-color 0.15s ease;
+}
+.ed-text:hover { outline-color: rgba(0, 0, 0, 0.65); }
+.ed-text.ed-editing {
+  outline: 1.5px solid #000;
+  background: rgba(255, 235, 130, 0.25);
+}
+
+/* editable MEDIA tiles: solid outline + lift on hover */
+.ed-media { cursor: pointer !important; }
+.ed-media:hover {
+  outline: 2px solid #000 !important;
+  outline-offset: 2px;
+  filter: brightness(1.06);
+}
+
+/* editable LINKS (email / socials / visit-site) */
+.ed-link { cursor: pointer; outline: 1.5px dashed transparent; outline-offset: 3px; }
+.ed-link:hover { outline-color: rgba(0, 0, 0, 0.65); }
+
+/* ---- bottom bar ------------------------------------------------ */
+.ed-bar {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  z-index: 2147483000;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #0a0a0a;
+  color: #fff;
+  border-radius: 999px;
+  padding: 10px 12px 10px 20px;
+  font-family: "Satoshi", system-ui, sans-serif;
+  font-size: 13.5px;
+  line-height: 1.2;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  max-width: min(94vw, 720px);
+}
+.ed-bar__msg { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ed-bar__msg b { font-weight: 700; }
+
+.ed-btn {
+  font: inherit;
+  font-weight: 700;
+  border: 0;
+  border-radius: 999px;
+  padding: 9px 16px;
+  cursor: pointer;
+  background: #fff;
+  color: #000;
+  white-space: nowrap;
+}
+.ed-btn:disabled { opacity: 0.5; cursor: default; }
+.ed-btn--ghost {
+  background: transparent;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  font-weight: 500;
+}
+.ed-btn--ghost:hover { border-color: #fff; }
+
+/* ---- dialog (password / link address) -------------------------- */
+.ed-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(6px);
+  font-family: "Satoshi", system-ui, sans-serif;
+}
+.ed-panel {
+  background: #fff;
+  border: 1px solid #000;
+  padding: 28px 30px 24px;
+  width: min(92vw, 400px);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.18);
+}
+.ed-panel h2 {
+  margin: 0 0 6px;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+.ed-panel p { margin: 0 0 16px; font-size: 13.5px; color: #444; }
+.ed-panel .ed-err { color: #c22a12; font-weight: 500; min-height: 18px; margin: 8px 0 0; }
+.ed-input {
+  width: 100%;
+  font: inherit;
+  font-size: 15px;
+  border: 0;
+  border-bottom: 1.5px solid #000;
+  padding: 8px 2px;
+  outline: none;
+  background: transparent;
+  box-sizing: border-box;
+}
+.ed-panel__row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 22px;
+}
+.ed-panel .ed-btn { background: #000; color: #fff; }
+.ed-panel .ed-btn--ghost { background: transparent; color: #000; border-color: rgba(0, 0, 0, 0.35); }
+.ed-panel .ed-btn--ghost:hover { border-color: #000; }
+
+/* tiny pulsing dot while publishing */
+.ed-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #7CFC9B;
+  animation: ed-pulse 1s ease-in-out infinite;
+  flex: none;
+}
+@keyframes ed-pulse { 50% { opacity: 0.25; } }
