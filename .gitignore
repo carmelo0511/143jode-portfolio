@@ -13,3 +13,4 @@ MISSION.md
 *.mov
 Thumbs.db
 .vercel
+.env*
