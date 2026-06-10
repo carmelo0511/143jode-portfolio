@@ -264,7 +264,7 @@ window.SITE_CONTENT = {
           "type": "image"
         },
         {
-          "src": "media/img-1.jpg",
+          "src": "https://hkf29dw0wvteqnwj.public.blob.vercel-storage.com/media-uploads/rive-S6nnqko80FCwVft07EUY2mZJJbVIpS.jpeg",
           "type": "image"
         },
         {
