@@ -97,17 +97,18 @@
   } catch (_) {}
   if (wantsEdit) loadEditor();
 
-  /* hidden trigger: clicking the "143jode" signature 5 times within
-     ~2s opens the editor — no special URL needed. Rare enough that
-     visitors never stumble into it (and Cancel backs out cleanly). */
+  /* hidden trigger: DOUBLE-CLICK (or double-tap) the "143jode"
+     signature to open the editor — no special URL needed. A stray
+     double-click just shows the password box; Cancel backs out. */
   if (!wantsEdit) {
     var taps = 0, tapTimer = null;
     all(".grid-author, .work-author, .about-author").forEach(function (sig) {
+      sig.style.cursor = "default";
       sig.addEventListener("click", function () {
         taps++;
         if (tapTimer) clearTimeout(tapTimer);
-        tapTimer = setTimeout(function () { taps = 0; }, 2000);
-        if (taps >= 5) {
+        tapTimer = setTimeout(function () { taps = 0; }, 800);
+        if (taps >= 2) {
           taps = 0;
           try { sessionStorage.setItem("editorOn", "1"); } catch (_) {}
           loadEditor();
