@@ -253,7 +253,7 @@ window.SITE_CONTENT = {
       ]
     },
     {
-      "name": "Project X (publish test)",
+      "name": "Project 10",
       "meta": "Coming soon",
       "url": "#",
       "desc": "Placeholder — rename and add media.",
