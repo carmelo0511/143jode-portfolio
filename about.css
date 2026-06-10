@@ -246,15 +246,17 @@ html.no-js body.about .cover { display: none; }
   .about-col--bio,
   .about-col--works { grid-column: 1; grid-row: auto; }
   /* the maker's name flows in normal order on mobile (not pinned), like the grid/
-     focus authors, and drops its vt-name */
-  .about-author { position: static; left: auto; bottom: auto; margin: 0 var(--pad); view-transition-name: none; }
-  /* footer: unpin and stack on narrow */
+     focus authors, and drops its vt-name. No extra side margin — .about-main's
+     padding already indents it, so it lines up with the prose above; a clear
+     top margin separates it from the selected-works text. */
+  .about-author { position: static; left: auto; bottom: auto; margin: clamp(40px, 8vh, 72px) 0 0; view-transition-name: none; }
+  /* footer: unpin and stack on narrow — side padding 0 for the same reason */
   .about-foot {
     position: static;
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
-    padding: 4vh var(--pad) 6vh;
+    padding: 4vh 0 6vh;
   }
   .about-foot__mid { flex-direction: column; align-items: flex-start; gap: 10px; }
   .about-social { flex-wrap: wrap; }
