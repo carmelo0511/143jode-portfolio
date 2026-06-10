@@ -78,20 +78,41 @@
   /* ---- edit mode gate ---------------------------------------------
      ?edit on any URL (or an already-unlocked session) loads the editor.
      Visitors never download a byte of editor code. */
+  function loadEditor() {
+    var css = document.createElement("link");
+    css.rel = "stylesheet";
+    css.href = "editor.css?v=2";
+    document.head.appendChild(css);
+    var js = document.createElement("script");
+    js.src = "editor.js?v=2";
+    js.type = "module";
+    document.head.appendChild(js);
+  }
+
   var wantsEdit = false;
   try {
     wantsEdit =
       /[?&]edit/.test(location.search) ||
       sessionStorage.getItem("editorOn") === "1";
   } catch (_) {}
-  if (wantsEdit) {
-    var css = document.createElement("link");
-    css.rel = "stylesheet";
-    css.href = "editor.css?v=1";
-    document.head.appendChild(css);
-    var js = document.createElement("script");
-    js.src = "editor.js?v=1";
-    js.type = "module";
-    document.head.appendChild(js);
+  if (wantsEdit) loadEditor();
+
+  /* hidden trigger: clicking the "143jode" signature 5 times within
+     ~2s opens the editor — no special URL needed. Rare enough that
+     visitors never stumble into it (and Cancel backs out cleanly). */
+  if (!wantsEdit) {
+    var taps = 0, tapTimer = null;
+    all(".grid-author, .work-author, .about-author").forEach(function (sig) {
+      sig.addEventListener("click", function () {
+        taps++;
+        if (tapTimer) clearTimeout(tapTimer);
+        tapTimer = setTimeout(function () { taps = 0; }, 2000);
+        if (taps >= 5) {
+          taps = 0;
+          try { sessionStorage.setItem("editorOn", "1"); } catch (_) {}
+          loadEditor();
+        }
+      });
+    });
   }
 })();

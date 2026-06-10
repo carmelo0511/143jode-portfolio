@@ -500,7 +500,6 @@
         var pw = await dialog({
           title: "Edit your website",
           intro: "Enter your editing password. You'll then be able to click any text or image on the site to change it.",
-          password: true,
           ok: "Start editing",
           error: error
         });
