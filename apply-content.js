@@ -81,10 +81,10 @@
   function loadEditor() {
     var css = document.createElement("link");
     css.rel = "stylesheet";
-    css.href = "editor.css?v=2";
+    css.href = "editor.css?v=3";
     document.head.appendChild(css);
     var js = document.createElement("script");
-    js.src = "editor.js?v=3";
+    js.src = "editor.js?v=4";
     js.type = "module";
     document.head.appendChild(js);
   }

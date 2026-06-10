@@ -367,8 +367,11 @@
     stopEdit(true);
   }, true);
 
-  /* ---------- bottom bar ---------- */
-  var bar, barMsg, barStrong, barRest, btnPublish, btnExit, dot;
+  /* ---------- bottom bar ----------
+     Collapsible: the chevron shrinks it to a small pencil button in
+     the corner so the page is never blocked; click to bring it back. */
+  var bar, barMsg, barStrong, barRest, btnPublish, btnExit, btnHide, mini, miniBadge, dot;
+  var collapsed = false;
   function buildBar() {
     bar = el("div", "ed-bar");
     dot = el("span", "ed-dot");
@@ -382,11 +385,32 @@
     btnPublish.onclick = publish;
     btnExit = el("button", "ed-btn ed-btn--ghost", "Exit");
     btnExit.onclick = exitEdit;
+    btnHide = el("button", "ed-collapse", "⌄");
+    btnHide.title = "Hide the panel — your changes are kept";
+    btnHide.setAttribute("aria-label", "Hide the editing panel");
+    btnHide.onclick = function (e) {
+      e.stopPropagation();
+      setCollapsed(true);
+    };
+    mini = el("span", "ed-mini", "✎");
+    miniBadge = el("span", "ed-badge", "");
+    mini.appendChild(miniBadge);
     bar.appendChild(dot);
     bar.appendChild(barMsg);
     bar.appendChild(btnPublish);
     bar.appendChild(btnExit);
+    bar.appendChild(btnHide);
+    bar.appendChild(mini);
+    bar.addEventListener("click", function () {
+      if (collapsed) setCollapsed(false);
+    });
     document.body.appendChild(bar);
+    updateBar();
+  }
+  function setCollapsed(v) {
+    collapsed = v;
+    bar.classList.toggle("ed-min", v);
+    bar.title = v ? "Open the editing panel" : "";
     updateBar();
   }
   function setMsg(strong, rest) {
@@ -397,6 +421,10 @@
     if (!bar) return;
     var n = changeCount();
     btnPublish.disabled = n === 0 || demo;
+    if (miniBadge) {
+      miniBadge.textContent = String(n);
+      miniBadge.style.display = n > 0 ? "" : "none";
+    }
     if (strong != null) { setMsg(strong, rest || ""); return; }
     if (demo) setMsg("Preview editing", " — publishing only works on the live site");
     else if (n === 0) setMsg("Editing", " — click any text or image to change it");
