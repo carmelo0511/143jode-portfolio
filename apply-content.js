@@ -84,7 +84,7 @@
     css.href = "editor.css?v=2";
     document.head.appendChild(css);
     var js = document.createElement("script");
-    js.src = "editor.js?v=2";
+    js.src = "editor.js?v=3";
     js.type = "module";
     document.head.appendChild(js);
   }

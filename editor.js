@@ -475,15 +475,20 @@
     }
   }
 
-  /* ---------- auth gate, then boot ---------- */
+  /* ---------- auth gate, then boot ----------
+     FAIL CLOSED: the editor unlocks ONLY when the server explicitly
+     answers { ok: true } for this password. The any-password "demo"
+     mode exists ONLY on localhost (static preview with no API). */
+  var LOCAL_HOST = /^(localhost|127\.|0\.0\.0\.0|\[::1\])/.test(location.hostname) || location.protocol === "file:";
+
   async function verify(pw) {
     try {
       var r = await api({ action: "verify", password: pw });
-      /* static-only host (local preview): no API at all → demo mode */
-      if (r.status === 404 || r.status === 405 || r.status === 501) return "demo";
-      return r.ok;
+      if (LOCAL_HOST && (r.status === 404 || r.status === 405 || r.status === 501)) return "demo";
+      var data = await r.json().catch(function () { return null; });
+      return !!(r.ok && data && data.ok === true);
     } catch (_) {
-      return "demo";
+      return LOCAL_HOST ? "demo" : "error";
     }
   }
 
@@ -492,7 +497,7 @@
     if (key) {
       var ok = await verify(key);
       if (ok === "demo") demo = true;
-      if (ok === false) { sessionStorage.removeItem("editKey"); key = null; }
+      else if (ok !== true) { sessionStorage.removeItem("editKey"); key = null; }
     }
     if (!key) {
       var error = "";
@@ -506,8 +511,10 @@
         if (pw == null) { exitEdit(); return; }
         var v = await verify(pw);
         if (v === "demo") { demo = true; key = pw; break; }
-        if (v) { key = pw; break; }
-        error = "That password isn't right — try again.";
+        if (v === true) { key = pw; break; }
+        error = v === "error"
+          ? "Couldn't reach the server — please check your connection and try again."
+          : "That password isn't right — try again.";
       }
       try {
         sessionStorage.setItem("editKey", key);
