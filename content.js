@@ -175,7 +175,7 @@ window.SITE_CONTENT = {
       ]
     },
     {
-      "name": "Project 07",
+      "name": "Project 007",
       "meta": "Coming soon",
       "url": "#",
       "desc": "Placeholder — rename and add media.",
