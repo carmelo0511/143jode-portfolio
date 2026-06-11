@@ -170,6 +170,254 @@ function init(el) {
   const pivots = [new THREE.Group(), new THREE.Group()];
   pivots.forEach((p) => scene.add(p));
 
+  /* ---- the swordsman ------------------------------------------
+     A tiny original pixel-art nod to a certain green-haired,
+     three-sword stylist: on hover he dashes along the cut diagonal,
+     and the mark splits in his wake (the cut waits for him to pass
+     centre). Two frames: mid-lunge with the blade out, then a
+     standing beat before he fades. Drawn from a pixel map — no
+     external image, ~1KB of strings. */
+  const ZPAL = {
+    k: "#1a1d22", // outline / dark detail / closed-eye slit
+    h: "#4cc173", // hair bright green
+    H: "#2f8551", // hair shadow
+    s: "#dba56c", // tan skin
+    S: "#b97f4a", // skin shadow
+    r: "#9c5b3e", // eye scar
+    e: "#e0bd4a", // earrings
+    t: "#f4f4f0", // shirt white
+    T: "#d6d6cd", // shirt shadow
+    G: "#3f9655", // haramaki green
+    F: "#2f7340", // haramaki shadow
+    p: "#2b2e35", // pants charcoal
+    P: "#1d2026", // pants shadow
+    R: "#c03a2e", // hilt red accent
+    w: "#aab8c4", // blade
+    W: "#dfe7ee", // blade glint
+    g: "#4a4f57", // hilt
+    b: "#15181c", // boots
+    // — Goku (Super Saiyan) —
+    y: "#cdd3da", // Ultra Instinct silver hair
+    Y: "#99a2ae", // silver hair shadow
+    o: "#f08c1e", // orange gi
+    O: "#c96d12", // gi shadow
+    u: "#2b4fd0", // blue belt / boots / wristbands
+    B: "#6ec3ff", // ki / beam blue
+  };
+  /* four frames matched to the client's second reference (original
+     art, not copied pixels): spiky green hair, tan skin, open-collar
+     white shirt, green haramaki, charcoal pants, red-accented hilts.
+     One scar-closed eye. The cut still lands ON the sheathing. */
+  const Z_RUN1 = [
+    ".....k.kkk.k................",
+    "....kkhhhhkkk...............",
+    "....khhhhhhhk...............",
+    "...khhhhhhhhhk..............",
+    "...kHhhhhhhhhk..............",
+    "...kHshhhhhssk..............",
+    "...kHsssssssrsk.............",
+    "...kHsesssssksk.............",
+    "....kSSsssskwwwwwW..........",
+    "...kktttstkkkssgkwwwwwwwwW..",
+    "..kttttsttttkssk............",
+    "..kGGGGGGGGk................",
+    "..kpppppkkpppk..............",
+    ".kppPk....kpppk.............",
+    ".kpk........kppk............",
+    "kbbk.........kbbk...........",
+    "kbk...........kbbk..........",
+    "............................",
+    "............................",
+  ];
+  const Z_RUN2 = [
+    ".....k.kkk.k................",
+    "....kkhhhhkkk...............",
+    "....khhhhhhhk...............",
+    "...khhhhhhhhhk..............",
+    "...kHhhhhhhhhk..............",
+    "...kHshhhhhssk..............",
+    "...kHsssssssrsk.............",
+    "...kHsesssssksk.............",
+    "....kSSsssskwwwwwW..........",
+    "...kktttstkkkssgkwwwwwwwwW..",
+    "..kttttsttttkssk............",
+    "..kGGGGGGGGk................",
+    "..kppppppppk................",
+    "...kppPpppk.................",
+    "....kppbbk..................",
+    "....kbbbk...................",
+    ".....kbk....................",
+    "............................",
+    "............................",
+  ];
+  const Z_FOLLOW = [
+    "...k.kkk.k.................",
+    "..kkhhhhkkk................",
+    "..khhhhhhhk................",
+    ".khhhhhhhhhk...............",
+    ".kHhhhhhhhhk...............",
+    ".kHshhhhhssk...............",
+    ".kHsssssssrsk..............",
+    ".kHsesssssksk..............",
+    ".kHseSsssrskwwwwwwW........",
+    "..kSsssssk.................",
+    "..ktttssttkkkssgkwwwwwwwwW.",
+    ".kttttstttttkssk...........",
+    ".kttTttttTtkgwwwwwW........",
+    ".kGGGGGGGGk................",
+    ".kGGFGGFGGk................",
+    ".kpppppppk.................",
+    "..kpppppk..................",
+    "..kpk.kpk..................",
+    "..kPk.kPk..................",
+    "..kbk.kbk..................",
+    ".kkbkkkbkk.................",
+  ];
+  const Z_SHEATH = [
+    "...k.kkk.k.......",
+    "..kkhhhhkkk......",
+    "..khhhhhhhk......",
+    ".khhhhhhhhhk.....",
+    ".kHhhhhhhhhk.....",
+    ".kHshhhhhssk.....",
+    ".kHsssssssrsk....",
+    ".kHsesssssksk....",
+    ".kHseSsssrsk.....",
+    "..kSsssssk.......",
+    "..ktttssttk......",
+    ".kttttstttttk....",
+    ".kttTttttTttk....",
+    ".kGGGGGGGGk......",
+    ".kGGFGGFGGkkk....",
+    ".kpppppppkttk....",
+    "..kpppppkRRk.....",
+    "..kpk..kpkggk....",
+    "..kPk..kPk.......",
+    "..kbk..kbk.......",
+    ".kkbkkkkbkk......",
+  ];
+  function zSprite(map) {
+    const cv = document.createElement("canvas");
+    cv.width = map[0].length;
+    cv.height = map.length;
+    const ctx = cv.getContext("2d");
+    map.forEach((row, y) => {
+      for (let x = 0; x < row.length; x++) {
+        const col = ZPAL[row[x]];
+        if (col) { ctx.fillStyle = col; ctx.fillRect(x, y, 1, 1); }
+      }
+    });
+    return cv;
+  }
+  const zFrames = [Z_RUN1, Z_RUN2, Z_FOLLOW, Z_SHEATH].map(zSprite);
+  const zMaps = [Z_RUN1, Z_RUN2, Z_FOLLOW, Z_SHEATH];
+  const zoro = document.createElement("div");
+  zoro.className = "logo3d__zoro";
+  zFrames.forEach((c) => zoro.appendChild(c));
+  zoro.style.opacity = "0";
+  el.appendChild(zoro);
+  /* sprint afterimages: same run frame, trailing along the path */
+  const ghostURL = zFrames[0].toDataURL();
+  const ghosts = [0, 1, 2].map(() => {
+    const im = new Image();
+    im.src = ghostURL;
+    im.className = "logo3d__zoro-ghost";
+    im.style.opacity = "0";
+    el.appendChild(im);
+    return im;
+  });
+
+  /* ---- the saiyan --------------------------------------------
+     Hovers ALTERNATE between the swordsman and an Ultra-Instinct
+     fighter (silver hair, bare torso, orange gi pants) (original art): he pops in with instant transmission
+     (two fingers to the brow, flickering), drops into a kamehameha
+     charge, then FIRES a beam along the cut diagonal — the mark
+     splits as the beam crosses it, and the beam keeps blasting for
+     as long as the hover holds. Three frames + a stretchable beam. */
+  const G_TELE = [
+    "..k.k.kk.k......",
+    ".kykykyykyk.....",
+    ".kyyyyyyyyk.....",
+    "..kyyyyyyyk.....",
+    ".kYyyyyyyyk.....",
+    ".kYsyyyyssk.....",
+    ".kYssssssskss...",
+    ".kYsskkssksk....",
+    "..kSsssssk......",
+    "..kssssssk......",
+    ".kssssssssk.....",
+    ".ksSssssSsk.....",
+    ".kuuuuuuuuk.....",
+    ".koooooook......",
+    "..kooook........",
+    "..kok..kok......",
+    "..kok..kok......",
+    "..kuk..kuk......",
+    ".kkukkkkukk.....",
+  ];
+  const G_CHARGE = [
+    "..k.k.kk.k......",
+    ".kykykyykyk.....",
+    ".kyyyyyyyyk.....",
+    "..kyyyyyyyk.....",
+    ".kYyyyyyyyk.....",
+    ".kYsyyyyssk.....",
+    ".kYsssssssk.....",
+    ".kYsskksssk.....",
+    "..kSsssssk......",
+    "..kssssssk......",
+    ".kssssssssk.....",
+    ".ksSssssSssskBB.",
+    ".kuuuuuuuusskBB.",
+    ".koooooook......",
+    "..kooook........",
+    "..kok..kok......",
+    "..kok..kok......",
+    "..kuk..kuk......",
+    ".kkukkkkukk.....",
+  ];
+  const G_FIRE = [
+    "..k.k.kk.k......",
+    ".kykykyykyk.....",
+    ".kyyyyyyyyk.....",
+    "..kyyyyyyyk.....",
+    ".kYyyyyyyyk.....",
+    ".kYsyyyyssk.....",
+    ".kYsssssssk.....",
+    ".kYsskksssk.....",
+    "..kSsssssk......",
+    "..ksssssskuss...",
+    ".kssssssssukss..",
+    ".ksSssssSsk.....",
+    ".kuuuuuuuuk.....",
+    ".koooooook......",
+    "..kooook........",
+    "..kok..kok......",
+    "..kok..kok......",
+    "..kuk..kuk......",
+    ".kkukkkkukk.....",
+  ];
+  const G_BEAM = [
+    "kkkkkkkk",
+    "kBBBBBBk",
+    "BWWWWWWB",
+    "WWWWWWWW",
+    "BWWWWWWB",
+    "kBBBBBBk",
+    "kkkkkkkk",
+  ];
+  const gFrames = [G_TELE, G_CHARGE, G_FIRE].map(zSprite);
+  const gMaps = [G_TELE, G_CHARGE, G_FIRE];
+  const goku = document.createElement("div");
+  goku.className = "logo3d__zoro"; // same positioning rules
+  gFrames.forEach((c) => goku.appendChild(c));
+  goku.style.opacity = "0";
+  el.appendChild(goku);
+  const beam = zSprite(G_BEAM);
+  beam.className = "logo3d__beam";
+  beam.style.opacity = "0";
+  el.appendChild(beam);
+
   /* ---- sizing: render at the mount's CSS size, DPR-capped ----
      (the canvas CSS-fills whatever box carries it — mount or
      flight proxy — so the render resolution tracks the mount) */
@@ -180,6 +428,18 @@ function init(el) {
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
+    // the fighters scale with the mark (≈42% of its height)
+    const zh = Math.max(9, h * 0.42);
+    zFrames.forEach((c, i) => {
+      c.style.height = zh + "px";
+      c.style.width = (zh * zMaps[i][0].length) / zMaps[i].length + "px";
+    });
+    ghosts.forEach((g) => (g.style.height = zh + "px"));
+    gFrames.forEach((c, i) => {
+      c.style.height = zh + "px";
+      c.style.width = (zh * gMaps[i][0].length) / gMaps[i].length + "px";
+    });
+    beam.style.height = Math.max(5, h * 0.13) + "px";
     if (reduced && ready) renderer.render(scene, camera);
   }
   new ResizeObserver(resize).observe(el);
@@ -249,6 +509,104 @@ function init(el) {
   let tiltX = 0, tiltY = 0, curTX = 0, curTY = 0;
   let hover = false;
   let cut = 0;
+  let zoroT = 0;  // ms since the hover started — drives whichever fighter is up
+  let actor = 0;  // hovers alternate: 0 = the swordsman, 1 = the saiyan
+  let hovers = 0;
+  let prevHover = false;
+
+  /* the swordsman's scene, anime-staged:
+     0–200ms   SPRINT through the mark along the cut diagonal — two
+               alternating run frames + afterimage ghosts
+     200–760ms FOLLOW-THROUGH: dead still at the far side, blade
+               still out. The mark is UNTOUCHED. Tension.
+     760ms     SHEATHES — and the mark falls apart in that instant
+               (the loop fires the cut + a jolt at Z_SHEATH_MS)
+     1500ms+   fades out, scene over */
+  const Z_SPRINT_MS = 200, Z_SHEATH_MS = 760, Z_FADE_MS = 1500, Z_END_MS = 1800;
+  const zPath = (q) => [-25 + 110 * q, -18 + 90 * q]; // % of the mount, along the blade
+  function zShow(idx) {
+    zFrames.forEach((c, i) => (c.style.display = i === idx ? "block" : "none"));
+  }
+  function updateZoro(t) {
+    if (t <= 0 || t > Z_END_MS) {
+      zoro.style.opacity = "0";
+      ghosts.forEach((g) => (g.style.opacity = "0"));
+      return;
+    }
+    const p = Math.min(t / Z_SPRINT_MS, 1);
+    const sprinting = p < 1;
+    // frame: alternate run poses every ~55ms, then follow-through, then sheathed
+    zShow(sprinting ? (Math.floor(t / 55) % 2) : t < Z_SHEATH_MS ? 2 : 3);
+    const [x, y] = zPath(p);
+    zoro.style.left = x + "%";
+    zoro.style.top = y + "%";
+    zoro.style.transform =
+      "translate(-50%,-50%)" + (sprinting ? " rotate(33deg)" : "");
+    zoro.style.opacity =
+      t > Z_FADE_MS ? String(Math.max(0, 1 - (t - Z_FADE_MS) / 300)) : "1";
+    // afterimages chase him along the path, then evaporate
+    ghosts.forEach((g, i) => {
+      const q = p - (i + 1) * 0.2;
+      if (!sprinting && t > Z_SPRINT_MS + 140) { g.style.opacity = "0"; return; }
+      if (q <= 0) { g.style.opacity = "0"; return; }
+      const [gx, gy] = zPath(q);
+      g.style.left = gx + "%";
+      g.style.top = gy + "%";
+      g.style.transform = "translate(-50%,-50%) rotate(33deg)";
+      g.style.opacity = String([0.3, 0.18, 0.1][i] * (sprinting ? 1 : 1 - (t - Z_SPRINT_MS) / 140));
+    });
+  }
+
+  /* the saiyan's scene:
+     0–160ms     blinks into existence ABOVE the mark (instant
+                 transmission flicker), two fingers to the brow
+     160–260ms   gone — the hop
+     260–420ms   reappears DOWN at the firing spot on the cut line
+     420–700ms   KAMEHAMEHA CHARGE — hands cupped, ki glowing
+     700ms       FIRES from the bottom-right, UP the cut diagonal;
+                 the mark splits as the beam crosses (G_CUT_MS)
+     700–1700ms  blasts for one second
+     1700–2000ms beam dies, he flickers back out of existence */
+  const G_FIRE_MS = 700, G_CUT_MS = 780, G_BEAM_END = 1700, G_GONE = 2000;
+  const G_TOP = [46, -24]; // first blink-in: above the mark
+  const G_SPOT = [96, 82]; // firing spot: the cut line's BOTTOM-RIGHT
+  function gShow(idx) {
+    gFrames.forEach((c, i) => (c.style.display = i === idx ? "block" : "none"));
+  }
+  function updateGoku(t) {
+    if (t <= 0 || t > G_GONE) {
+      goku.style.opacity = "0";
+      beam.style.opacity = "0";
+      return;
+    }
+    const blink = Math.floor(t / 45) % 2 ? "1" : "0.15";
+    let pos = G_SPOT, op = "1", frame = 1;
+    if (t < 160) { pos = G_TOP; op = blink; frame = 0; }          // appear up top
+    else if (t < 260) { op = "0"; frame = 0; }                    // mid-hop
+    else if (t < 420) { op = blink; frame = 0; }                  // re-appear below
+    else if (t < G_FIRE_MS) { frame = 1; }                        // charge
+    else if (t < G_BEAM_END) { frame = 2; }                       // FIRE
+    else { frame = 0; op = blink; }                               // vanish flicker
+    gShow(frame);
+    goku.style.left = pos[0] + "%";
+    goku.style.top = pos[1] + "%";
+    // mirrored at the firing spot: he faces LEFT to shoot up the diagonal
+    goku.style.transform =
+      "translate(-50%,-50%)" + (t >= 160 ? " scaleX(-1)" : "");
+    goku.style.opacity = op;
+    if (t > G_FIRE_MS && t < G_BEAM_END + 130) {
+      const ext = Math.min((t - G_FIRE_MS) / 110, 1); // beam races out
+      beam.style.left = G_SPOT[0] - 9 + "%";
+      beam.style.top = G_SPOT[1] - 7 + "%";
+      beam.style.width = ext * 110 + "%";
+      beam.style.transform = "translateY(-50%) rotate(213deg)"; // up-left, along the cut
+      // dies fast once the two seconds are up
+      beam.style.opacity = t > G_BEAM_END ? String(Math.max(0, 1 - (t - G_BEAM_END) / 130)) : "1";
+    } else {
+      beam.style.opacity = "0";
+      beam.style.width = "0%";
+    }
+  }
 
   /* hand the baton to the next page — the rect comes from the
      CANVAS (it's wherever the mark visually is, mount or proxy) */
@@ -363,8 +721,21 @@ function init(el) {
     curTX += (tiltX - curTX) * Math.min(dt * 4, 1);
     curTY += (tiltY - curTY) * Math.min(dt * 4, 1);
 
-    // sword cut: STRIKE fast on hover, let the pieces rejoin gently
-    cut += ((hover ? 1 : 0) - cut) * Math.min(dt * (hover ? 11 : 3.2), 1);
+    // the fighter's scene runs first; the mark only falls apart on
+    // the killing beat (sheath / beam crossing) — with a little jolt
+    if (hover && !prevHover) actor = hovers++ % 2; // alternate fighters
+    prevHover = hover;
+    zoroT = hover ? zoroT + dt * 1000 : 0;
+    if (actor === 0) { updateZoro(zoroT); updateGoku(0); }
+    else { updateGoku(zoroT); updateZoro(0); }
+
+    const cutOn = hover && zoroT > (actor === 0 ? Z_SHEATH_MS : G_CUT_MS);
+    cut += ((cutOn ? 1 : 0) - cut) * Math.min(dt * (cutOn ? 16 : 3.2), 1);
+    let jolt = 0;
+    if (cutOn) {
+      const ts = zoroT - (actor === 0 ? Z_SHEATH_MS : G_CUT_MS);
+      jolt = Math.exp(-ts / 110) * Math.sin(ts * 0.18) * 0.02;
+    }
     const slide = 0.13 * cut; // along the blade — the slice shear
     const gap = 0.045 * cut;  // a hair of daylight across the cut
     const shrink = 1 - 0.1 * cut; // keep both pieces inside the frame
@@ -373,7 +744,7 @@ function init(el) {
       const sgn = i === 0 ? 1 : -1;
       pv.position
         .copy(BLADE).multiplyScalar(slide * sgn)
-        .addScaledVector(CUTN, gap * sgn);
+        .addScaledVector(CUTN, gap * sgn + jolt); // jolt shakes the WHOLE mark
       pv.rotation.set(
         0.1 + Math.sin(now * 0.0006) * 0.07 + curTX,
         ry + curTY,

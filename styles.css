@@ -700,6 +700,41 @@ html.intro-run.intro-done .about-social {
   height: 100%;
 }
 
+/* the pixel-art swordsman who slices the mark on hover (logo3d.js
+   positions and sequences him each frame) */
+.logo3d__zoro {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 2;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+.logo3d__zoro canvas {
+  display: block;
+  image-rendering: pixelated;
+}
+/* his sprint afterimages — same sprite, fading down the path */
+.logo3d__zoro-ghost {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  pointer-events: none;
+  image-rendering: pixelated;
+}
+/* the saiyan's kamehameha — a pixel beam stretched along the cut
+   diagonal; logo3d.js animates its width from the firing hands */
+.logo3d__beam {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  pointer-events: none;
+  image-rendering: pixelated;
+  transform-origin: 0 50%;
+}
+
 /* the flight proxy: a body-level fixed box that carries the live canvas
    while it spring-hops from the previous page's spot to its new home —
    above the headers (z 40) but below the intro overlay */
