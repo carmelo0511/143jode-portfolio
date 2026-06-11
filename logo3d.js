@@ -625,6 +625,10 @@ function init(el) {
     } catch (_) {}
   });
 
+  /* the cut scenes (Zoro / Goku) play ONLY on /about's bio mark —
+     the header marks on the other pages stay calm: spin + tilt only */
+  const cutEnabled = document.body.classList.contains("about");
+
   addEventListener(
     "pointermove",
     (e) => {
@@ -632,6 +636,7 @@ function init(el) {
       tiltX = (e.clientY / innerHeight - 0.5) * 0.16;
       /* the mount is pointer-events:none (it must never block nav
          clicks), so hover is a bounding-box check instead */
+      if (!cutEnabled) return;
       const r = (flight ? flight.proxy : el).getBoundingClientRect();
       hover =
         e.clientX > r.left - 8 && e.clientX < r.right + 8 &&
